@@ -1,7 +1,7 @@
 const videoUpload = document.getElementById("videoUpload");
 
 function onVideoUpload(event) {
-    alert("file uploaded")
+    alert("file uploaded");
 }
 
-videoUpload.addEventListener("change", onVideoUpload)
+videoUpload.addEventListener("change", onVideoUpload);
