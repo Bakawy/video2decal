@@ -12,10 +12,12 @@
             WIP
         </header>
         <main>
-            <input type="file" id="videoUpload" style="display:none">
-            <label for="videoUpload">
-                <img src="images/upload video.gif" alt="Upload Video" class="centered" style="width: 50%;">
+            <input type="file" id="videoUpload" style="display:none" accept=".mp4 .gif">
+            <label for="videoUpload" id="videoUploadLabel" style="width: 40%;" class="hoverGrow">
+                <img src="images/upload video.gif" alt="Upload Video" style="width: 100%;">
             </label>
+            
+            <video controls autoplay muted id="videoPreview">
         </main>
     </div>
     <script src="website.js" defer></script>
