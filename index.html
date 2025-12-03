@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="website.css" rel="stylesheet" type="text/css">
     <title>Video2Decal</title>
+    <script src="scripts/omggif.js" defer></script>
+    <script src="scripts/helper.js" defer></script>
 </head>
 <body>
     <div class="fullWrapper">
         <header>
-            TODO: gif to video converter
+            TODO: size, frame rate, frame reuse, png vs jpg options
         </header>
+        <div id="loader">
+            <img src="images/loadingPlaceholderBlack.png" style="z-index: -2;" class="fill">
+            <img src="images/loadingPlaceholderWhite.png" alt="loading" class="fill">
+            <div id="loadFill" fill=""></div>
+        </div>
         <main>
             <input type="file" id="videoUpload" style="display:none" accept=".mp4 .gif">
             <label for="videoUpload" id="videoUploadLabel" style="width: 40%;" class="hoverGrow">
@@ -20,6 +27,6 @@
             <video controls autoplay muted id="videoPreview">
         </main>
     </div>
-    <script src="website.js" defer></script>
+    <script src="scripts/website.js" defer></script>
 </body>
 </html>
