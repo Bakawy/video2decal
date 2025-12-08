@@ -11,7 +11,7 @@
 <body>
     <div class="fullWrapper">
         <header>
-            TODO: size, frame rate, frame reuse, png vs jpg options
+            TODO: frame rate, frame reuse, png vs jpg options
         </header>
         <div id="loader">
             <img src="images/loadingPlaceholderBlack.png" style="z-index: -2;" class="fill">
@@ -20,11 +20,21 @@
         </div>
         <main>
             <input type="file" id="videoUpload" style="display:none" accept=".mp4 .gif">
-            <label for="videoUpload" id="videoUploadLabel" style="width: 40%;" class="hoverGrow">
+            <label for="videoUpload" id="videoUploadLabel" class="hoverGrow">
                 <img src="images/upload video.gif" alt="Upload Video" style="width: 100%;">
             </label>
 
-            <video controls autoplay muted id="videoPreview">
+            <div id="videoDiv">
+            <div id="videoWidth" class="videoEditor">
+                <img src="images/length.gif" class="fillBottom">
+                <input type="number" id="videoWidthInput" value="0">
+            </div>
+            <div id="videoHeight" class="videoEditor">
+                <img src="images/lengthRotated.gif" class="fillLeft">
+                <input type="number" id="videoHeightInput" value="0">
+            </div>
+            <video controls autoplay muted id="videoPreview" class="videoEditor"></video>
+            </div>
         </main>
     </div>
     <script src="scripts/website.js" defer></script>

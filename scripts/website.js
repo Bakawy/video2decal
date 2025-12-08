@@ -2,12 +2,21 @@
 
 const videoUpload = document.getElementById("videoUpload");
 const videoUploadLabel = document.getElementById("videoUploadLabel");
+const videoDiv = document.getElementById("videoDiv");
 const videoPreview = document.getElementById("videoPreview");
 const loadFill = document.getElementById("loadFill");
-const loader = document.getElementById("loader")
+const loader = document.getElementById("loader");
+const videoWidth = document.getElementById("videoWidth");
+const videoHeight = document.getElementById("videoHeight");
+
+const videoWidthInput = document.getElementById("videoWidthInput");
+const videoHeightInput = document.getElementById("videoHeightInput");
+
 let videoFile;
 
 videoUpload.onchange = onVideoUpload;
+videoWidthInput.onchange = resizeVideoPreview;
+videoHeightInput.onchange = resizeVideoPreview;
 
 let p = 0;
 loader.onmousemove = () => {
@@ -32,6 +41,20 @@ function validateVideo(event) {
     return true
 }
 
+function resizeVideoPreview() {
+    const width = parseInt(videoWidthInput.value)
+    const height = parseInt(videoHeightInput.value)
+    console.log(`${width} vs ${height}`)
+    if (width > height) {
+        console.log("width maxxing")
+        videoDiv.style.width = "70vmin";
+        videoDiv.style.height = `${70 * (height/width)}vmin`;
+    } else {
+        console.log("height maxxing")
+        videoDiv.style.height = "70vmin";
+        videoDiv.style.width = `${70 * (width/height)}vmin`;
+    }
+}
 
 async function onVideoUpload(event) {
     const validVideo = validateVideo(event)
@@ -63,10 +86,23 @@ function toVideoEditor() {
         iterations: 1,
         easing: "ease-in",
     });
-    anim.onfinish = () => {
+    anim.onfinish = function() {
         videoUploadLabel.style.display = "none";
-        videoPreview.style.display = "flex";
-        videoPreview.animate([
+        
+        videoDiv.style.display = "block";
+        videoWidthInput.value = videoPreview.videoWidth
+        videoHeightInput.value = videoPreview.videoHeight
+        resizeVideoPreview()
+        
+        /*
+        const videoRect = videoPreview.getBoundingClientRect();
+        videoWidth.style.width = `${videoRect.width}px`;
+        videoWidth.style.height = `${videoRect.height/5}px`;
+        //videoWidth.style.bottom = `${videoRect.top}px`;
+        //console.log(`${videoWidth.style.width} = ${videoPreview.clientWidth}`);
+        */
+        
+        const anim2 = videoDiv.animate([
             {transform: 'scale(0)'},
             {transform: 'scale(1)'},
         ],{
@@ -74,6 +110,28 @@ function toVideoEditor() {
             iterations: 1,
             easing: "ease-out",
         });
+        
+        anim2.onfinish = function() {
+            videoWidth.style.display = "block";
+            videoHeight.style.display = "block";
+
+            videoWidth.animate([
+                {transform: 'translateY(100%)'},
+                {transform: 'translateY(0%)'},
+            ],{
+                duration: 400,
+                iterations: 1,
+                easing: "ease-out",
+            })
+            videoHeight.animate([
+                {transform: 'translateX(-100%)'},
+                {transform: 'translateX(0%)'},
+            ],{
+                duration: 400,
+                iterations: 1,
+                easing: "ease-out",
+            })
+        }
     };
 }
 

@@ -1,0 +1,21 @@
+/Applications/krita.app/Contents/MacOS/ffmpeg -hide_banner -y -y -r 10 -start_number 0 -start_number_range 1 -i /Users/bakawi/Documents/Clone Repository/video2decal/images/frame%04d.png -vf scale=w=1442:h=200:flags=neighbor -c:v libopenh264 -b:v 5000k /Users/bakawi/Documents/Clone Repository/video2decal/images/length.mp4
+=====================================================
+Input #0, image2, from '/Users/bakawi/Documents/Clone Repository/video2decal/images/frame%04d.png':
+  Duration: 00:00:00.12, start: 0.000000, bitrate: N/A
+  Stream #0:0: Video: png, rgba(pc), 851x118 [SAR 39370:39370 DAR 851:118], 25 fps, 25 tbr, 25 tbn, 25 tbc
+Stream mapping:
+  Stream #0:0 -> #0:0 (png (native) -> h264 (libopenh264))
+Press [q] to stop, [?] for help
+[libopenh264 @ 0x7fdcbf814600] Slice count will be set automatically
+[libopenh264 @ 0x7fdcbf814600] [OpenH264] this = 0x0x600001b64000, Warning:SliceArgumentValidationFixedSliceMode(), unsupported setting with Resolution and uiSliceNum combination under RC on! So uiSliceNum is changed to 2!
+[libopenh264 @ 0x7fdcbf814600] [OpenH264] this = 0x0x600001b64000, Warning:bEnableFrameSkip = 0,bitrate can't be controlled for RC_QUALITY_MODE,RC_BITRATE_MODE and RC_TIMESTAMP_MODE without enabling skip frame.
+Output #0, mp4, to '/Users/bakawi/Documents/Clone Repository/video2decal/images/length.mp4':
+  Metadata:
+    encoder         : Lavf58.76.100
+  Stream #0:0: Video: h264 (avc1 / 0x31637661), yuv420p(tv, progressive), 1442x200 [SAR 42550:42539 DAR 851:118], q=2-31, 5000 kb/s, 10 fps, 10240 tbn
+    Metadata:
+      encoder         : Lavc58.134.100 libopenh264
+    Side data:
+      cpb: bitrate max/min/avg: 5000000/0/5000000 buffer size: 0 vbv_delay: N/A
+frame=    1 fps=0.0 q=-0.0 size=       0kB time=00:00:00.00 bitrate=3918.4kbits/s speed=0.153x    frame=    3 fps=0.0 q=-0.0 Lsize=      18kB time=00:00:00.20 bitrate= 744.9kbits/s speed= 4.3x    
+video:17kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 4.844972%
