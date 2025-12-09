@@ -8,15 +8,22 @@ const loadFill = document.getElementById("loadFill");
 const loader = document.getElementById("loader");
 const videoWidth = document.getElementById("videoWidth");
 const videoHeight = document.getElementById("videoHeight");
+const frameRateCanvas = document.getElementById("frameRateCanvas");
+const videoOptionsDiv = document.getElementById("videoOptionsDiv");
 
 const videoWidthInput = document.getElementById("videoWidthInput");
 const videoHeightInput = document.getElementById("videoHeightInput");
+const frameRateInput = document.getElementById("frameRateInput");
 
 let videoFile;
+let frameRate = 30;
 
 videoUpload.onchange = onVideoUpload;
 videoWidthInput.onchange = resizeVideoPreview;
 videoHeightInput.onchange = resizeVideoPreview;
+frameRateInput.onchange = function(e) {
+    frameRate = Math.max(e.target.value, 1);
+} 
 
 let p = 0;
 loader.onmousemove = () => {
@@ -42,8 +49,8 @@ function validateVideo(event) {
 }
 
 function resizeVideoPreview() {
-    const width = parseInt(videoWidthInput.value)
-    const height = parseInt(videoHeightInput.value)
+    const width = Math.max(parseInt(videoWidthInput.value), 1)
+    const height = Math.max(parseInt(videoHeightInput.value), 1)
     console.log(`${width} vs ${height}`)
     if (width > height) {
         console.log("width maxxing")
@@ -78,6 +85,9 @@ async function onVideoUpload(event) {
 
 function toVideoEditor() {
     //alert("ran");
+
+    console.log(videoPreview.getVideoPlaybackQuality().totalVideoFrames)
+
     const anim = videoUploadLabel.animate([
         {transform: 'scale(1)'},
         {transform: 'scale(0)'},
@@ -90,6 +100,7 @@ function toVideoEditor() {
         videoUploadLabel.style.display = "none";
         
         videoDiv.style.display = "block";
+        videoOptionsDiv.style.display = "block";
         videoWidthInput.value = videoPreview.videoWidth
         videoHeightInput.value = videoPreview.videoHeight
         resizeVideoPreview()
@@ -132,6 +143,17 @@ function toVideoEditor() {
                 easing: "ease-out",
             })
         }
+
+        
+        videoOptionsDiv.animate([
+            {transform: 'translateX(-100%)'},
+            {transform: 'translateX(0%)'},
+        ],{
+            duration: 500,
+            iterations: 1,
+            easing: "ease-out",
+        });
+        
     };
 }
 
@@ -150,3 +172,30 @@ function hideLoadProgress() {
 function showLoadProgress() {
     loader.style.display = "block";
 }
+
+const frctx = frameRateCanvas.getContext('2d');
+
+function animateFrameRate() {
+    setTimeout(animateFrameRate, 1000 / frameRate);
+    if (frameRateCanvas.style.display == "none") return;
+    const width = frameRateCanvas.width
+    const height = frameRateCanvas.height
+
+    frctx.clearRect(0, 0, width, height);
+    frctx.fillStyle = "#ff0000";
+    //frctx.strokeStyle = "red";
+    //frctx.strokeRect(0, 0, width, height);
+    frctx.fillStyle = "#ffffff";
+
+    const pi2 = 2 * Math.PI
+    const period = 2;
+    const time = ((Date.now() / 1000) % period) / period;
+    const r = 0.0007 * width * height
+    let x = width/2 + (width/2 - r) * Math.cos(time * pi2);
+    let y = height/2 + (height/2 - r) * Math.sin(time * 2 * pi2);
+
+    frctx.beginPath()
+    frctx.arc(x, y, r, 0, 2 * Math.PI);
+    frctx.fill();
+}
+animateFrameRate();
