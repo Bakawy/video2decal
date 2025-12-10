@@ -14,6 +14,8 @@ const videoOptionsDiv = document.getElementById("videoOptionsDiv");
 const videoWidthInput = document.getElementById("videoWidthInput");
 const videoHeightInput = document.getElementById("videoHeightInput");
 const frameRateInput = document.getElementById("frameRateInput");
+const jpgQuality = document.getElementById("jpgQuality");//slider
+const jpgQualityValue = document.getElementById("jpgQualityValue");
 
 let videoFile;
 let frameRate = 30;
@@ -24,11 +26,11 @@ videoHeightInput.onchange = resizeVideoPreview;
 frameRateInput.onchange = function(e) {
     frameRate = Math.max(e.target.value, 1);
 } 
-
-let p = 0;
-loader.onmousemove = () => {
-    p = (p + 0.01) % 1;
-    setLoadProgress(p);
+jpgQuality.oninput = function(e) {
+    jpgQualityValue.value = e.target.value
+}
+jpgQualityValue.onchange = function(e) {
+    jpgQuality.value = e.target.value;
 }
 
 function validateVideo(event) {

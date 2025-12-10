@@ -122,9 +122,8 @@ main {
     */
     position: absolute;
     left: 0;
-    top: 20%;
     width: 25%;
-    height: 60%;
+    /*height: 60%;*/
     /*background: blue;*/
 }
 
@@ -164,25 +163,33 @@ main {
 #videoWidthInput {
     position: absolute;
     top: 5%;
-    left: 45%;
-    width: 10%;
-    height: 25%;
-    /*min-width: 1.5vw;
-    min-height: 0.8vw;*/
+    left: calc(50% - 3.5vw/2);
+    /*width: 10%;
+    height: 25%;*/
+    width: 3.5vw;
+    height: 1.5vh;
     z-index: 1;
 }
 
 #videoHeightInput {
     position: absolute;
-    top: 46%;
+    top: calc(50% - 1.5vh/2);
     left: 55%;
-    width: 30%;
-    height: 8%;
-    /*min-width: 1.5vw;
-    min-height: 0.8vw;*/
+    /*width: 30%;
+    height: 8%;*/
+    width: 3.5vw;
+    height: 1.5vh;
     z-index: 1;
 }
 
 #frameRateCanvas {
     width: 70%;
+}
+
+.showJpgQuality {
+    display: none;
+}
+
+#videoOptionsDiv:has(#jpg:checked) .showJpgQuality {
+  display: block;
 }
