@@ -23,11 +23,13 @@ body {
     height: 100%;
     overflow: hidden;
     font-family: 'Comic Sans MS';
+    font-size: 2vmin;
 }
 
 img {
-  image-rendering: pixelated;   /* modern way */
-  image-rendering: crisp-edges; /* fallback for some browsers */
+
+    image-rendering: pixelated;   /* modern way */
+    image-rendering: crisp-edges; /* fallback for some browsers */
 }
 
 
@@ -122,7 +124,21 @@ main {
     */
     position: absolute;
     left: 0;
-    width: 25%;
+    width: min(calc(55vw - 35vmin), 92vh);
+    /*height: 60%;*/
+    /*background: blue;*/
+}
+
+#frameReuseDiv {
+    display: none;
+    /*
+    flex-direction: column;
+    align-items: center;
+    */
+    position: absolute;
+    right: 0;
+    width: min(calc(48vw - 35vmin), 92vh);
+    text-align: center;
     /*height: 60%;*/
     /*background: blue;*/
 }
@@ -137,6 +153,10 @@ main {
     object-fit: fill;
     /*max-height: 50%;*/
     outline: 0.2vw solid #fff;
+    background-image: url("images/Checkerboard_pattern.png");
+    background-size: 4vmin;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 #videoWidth {

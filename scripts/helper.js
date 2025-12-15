@@ -19,8 +19,8 @@ async function convertGifToVideo(gif) {
         //console.log(gifData);
 
         const gifReader = new GifReader(gifData);
-        console.log(gifReader);
-        console.log(gifReader.frameInfo(0))
+        //console.log(gifReader);
+        //console.log(gifReader.frameInfo(0))
         const frameCount = gifReader.numFrames();
         const width = gifReader.width;
         const height = gifReader.height;
@@ -55,14 +55,14 @@ async function convertGifToVideo(gif) {
 
         const stream = canvas.captureStream();
         const recorder = new MediaRecorder(stream, {
-            mimeType: 'video/webm;codecs=vp9'
+            mimeType: 'video/mp4;codecs=vp9'
         });
 
         const chunks = [];
         recorder.ondataavailable = e => chunks.push(e.data);
         recorder.onstop = () => {
             const blob = new Blob(chunks, { type: 'video/webm' });
-            console.log(blob);
+            //console.log(blob);
             hideLoadProgress();
             resolve(blob)
             //console.log(new File([blob], gif.name.slice(0, gif.name.length - 5) + ".webm", { type: blob.type }));
@@ -71,7 +71,7 @@ async function convertGifToVideo(gif) {
         }; 
 
         playFramesWithDelays(frames, ctx, canvas, recorder, duration);
-        console.log(frames);
+        //console.log(frames);
     }
 
     fileReader.readAsArrayBuffer(gif)
@@ -123,4 +123,79 @@ function easeInOutQuad(t) {
         if (t < 1) return 0.5 * t * t;
         t--;
         return -0.5 * (t * (t - 2) - 1);
+}
+
+function getFrameRate(video) {
+    return new Promise((resolve) => {
+    const readChunk = (chunkSize, offset) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          if (event.target.error) {
+            reject(event.target.error)
+          }
+          resolve(new Uint8Array(event.target.result))
+        }
+        reader.readAsArrayBuffer(video.slice(offset, offset + chunkSize))
+      })
+
+    mediaInfo
+        .analyzeData(video.size, readChunk)
+        .then((result) => {
+            //console.log(result);
+            //console.log(result.media.track[0].FrameRate);
+            resolve(result.media.track[0].FrameRate);
+        })
+    });
+}
+
+function getVideoFrame(file, frame) {
+    return new Promise((resolve) => {
+
+    const videoElement = document.createElement("video");
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    videoElement.src = URL.createObjectURL(file);
+    canvas.style.position = "fixed";
+    canvas.style.top = "0";
+    canvas.style.zIndex = "-5";
+
+    videoElement.onloadedmetadata = function() {
+        console.log(`${frame} / ${videoFrameRate} + 0.5/${videoFrameRate} = ${frame/videoFrameRate + 0.5/videoFrameRate}`);
+        videoElement.currentTime = Math.min(frame/videoFrameRate + 0.5/videoFrameRate, videoElement.duration);
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
     }
+
+    videoElement.onseeked = function() {
+        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+        //document.body.appendChild(canvas);
+        //console.log(canvas);
+        resolve(canvas.toDataURL("image/png"))
+    }
+
+    });
+}
+
+function calculateDifferenceScore(imageData1, imageData2) {
+    const data1 = imageData1.data;
+    const data2 = imageData2.data;
+
+    if (data1.length !== data2.length) {
+        throw new Error('Image data sizes do not match.');
+    }
+
+    let totalDifference = 0;
+        for (let i = 0; i < data1.length; i += 4) {
+            const rDiff = Math.abs(data1[i] - data2[i]);
+            const gDiff = Math.abs(data1[i + 1] - data2[i + 1]);
+            const bDiff = Math.abs(data1[i + 2] - data2[i + 2]);
+            const aDiff = Math.abs(data1[i + 3] - data2[i + 3]);
+            totalDifference += rDiff + gDiff + bDiff + aDiff;
+        }
+
+        // Normalize by the total number of pixels
+        const maxDifference = data1.length * 255;
+        return totalDifference / maxDifference;
+}

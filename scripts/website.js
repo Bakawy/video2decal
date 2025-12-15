@@ -10,16 +10,49 @@ const videoWidth = document.getElementById("videoWidth");
 const videoHeight = document.getElementById("videoHeight");
 const frameRateCanvas = document.getElementById("frameRateCanvas");
 const videoOptionsDiv = document.getElementById("videoOptionsDiv");
+const frameReuseDiv = document.getElementById("frameReuseDiv");
+const compareLeft = document.getElementById("compareLeft");
+const compareRight = document.getElementById("compareRight");
+const compareLeftFrame = document.getElementById("compareLeftFrame");
+const compareRightFrame = document.getElementById("compareRightFrame");
+const frameReuseTestResult = document.getElementById("frameReuseTestResult");
 
 const videoWidthInput = document.getElementById("videoWidthInput");
 const videoHeightInput = document.getElementById("videoHeightInput");
 const frameRateInput = document.getElementById("frameRateInput");
 const jpgQuality = document.getElementById("jpgQuality");//slider
 const jpgQualityValue = document.getElementById("jpgQualityValue");
+const differenceThreshold = document.getElementById("differenceThreshold");
+const checkAllFramesInput = document.getElementById("checkAllFramesInput");
 
+let mediaInfo;
 let videoFile;
 let frameRate = 30;
+let videoFrameRate;
 
+window.onerror = function(e, source, line) {
+    let text = `Bakawi did something wrong screenshot this error \n${e}\n${source}:${line}`;
+    alert(text);
+}
+window.addEventListener("dragover", (e) => {
+    if (videoUploadLabel.style.display == "none") return;
+
+    const fileItems = [...e.dataTransfer.items].filter(
+        (item) => item.kind === "file",
+    );
+    if (fileItems.length > 0) {
+        e.preventDefault();
+    }
+});
+window.addEventListener("drop", (e) => {
+    if (videoUploadLabel.style.display == "none") return;
+
+    if ([...e.dataTransfer.items].some((item) => item.kind === "file")) {
+        e.preventDefault();
+        videoUpload.files = e.dataTransfer.files;
+        videoUpload.onchange()
+    }
+});
 videoUpload.onchange = onVideoUpload;
 videoWidthInput.onchange = resizeVideoPreview;
 videoHeightInput.onchange = resizeVideoPreview;
@@ -32,9 +65,26 @@ jpgQuality.oninput = function(e) {
 jpgQualityValue.onchange = function(e) {
     jpgQuality.value = e.target.value;
 }
+compareLeftFrame.onchange = function (e) {
+    const frame = e.target.value;
+    getVideoFrame(videoFile, frame).then(url => {
+        compareLeft.src = url;
+    });
+}
+compareRightFrame.onchange = function (e) {
+    const frame = e.target.value;
+    getVideoFrame(videoFile, frame).then(url => {
+        compareRight.src = url;
+    });
+}
+differenceThreshold.onchange = updateTestDifference;
+checkAllFramesInput.oninput = function () {
+    const label = document.getElementById("checkLastLabel");
+    label.style.display = "none";
+    if (!checkAllFramesInput.checked) label.style.display = "block";
+}
 
-function validateVideo(event) {
-    const file = event.target.files[0];
+function validateVideo(file) {
     if (!file) return false;
 
     const fileName = file.name;
@@ -65,30 +115,33 @@ function resizeVideoPreview() {
     }
 }
 
-async function onVideoUpload(event) {
-    const validVideo = validateVideo(event)
+async function onVideoUpload() {
+    let file = videoUpload.files[0];
+    const validVideo = validateVideo(file);
     if (validVideo !== true) {
         if (validVideo) alert(validVideo);
         return;
     }
 
-    let file = event.target.files[0];
     if (file.name.endsWith("gif")) {
         file = await convertGifToVideo(file);
     }
 
     videoFile = file;
-    console.log(videoFile)
+    //console.log(videoFile)
     videoPreview.src = URL.createObjectURL(videoFile);
-    videoPreview.onloadeddata = () => {
+    videoPreview.onloadeddata = async () => {
+        videoFrameRate = await getFrameRate(videoFile);
+        if (!videoFrameRate) {
+            alert("This video is unsupported sorry \n I can\'t grab the frame rate");
+            return;
+        }
         toVideoEditor();
     };
 }
 
 function toVideoEditor() {
     //alert("ran");
-
-    console.log(videoPreview.getVideoPlaybackQuality().totalVideoFrames)
 
     const anim = videoUploadLabel.animate([
         {transform: 'scale(1)'},
@@ -103,6 +156,7 @@ function toVideoEditor() {
         
         videoDiv.style.display = "block";
         videoOptionsDiv.style.display = "block";
+        frameReuseDiv.style.display = "block";
         videoWidthInput.value = videoPreview.videoWidth
         videoHeightInput.value = videoPreview.videoHeight
         resizeVideoPreview()
@@ -155,8 +209,25 @@ function toVideoEditor() {
             iterations: 1,
             easing: "ease-out",
         });
+        frameReuseDiv.animate([
+            {transform: 'translateX(100%)'},
+            {transform: 'translateX(0%)'},
+        ],{
+            duration: 500,
+            iterations: 1,
+            easing: "ease-out",
+        });
         
     };
+
+    getVideoFrame(videoFile, 0).then(url => {
+        compareLeft.onload = updateTestDifference;
+        compareLeft.src = url;
+    });
+    getVideoFrame(videoFile, 1).then(url => {
+        compareRight.onload = updateTestDifference;
+        compareRight.src = url;
+    });
 }
 
 function setLoadProgress(percent) {
@@ -173,6 +244,29 @@ function hideLoadProgress() {
 
 function showLoadProgress() {
     loader.style.display = "block";
+}
+
+function updateTestDifference() {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d", {willReadFrequently: true});
+    canvas.width = 64;
+    canvas.height = 64;
+
+    ctx.drawImage(compareLeft, 0, 0, canvas.width, canvas.height);
+    const dataLeft = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.drawImage(compareRight, 0, 0, canvas.width, canvas.height);
+    const dataRight = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    const diff = calculateDifferenceScore(dataLeft, dataRight);
+    if (diff * 100 < parseFloat(differenceThreshold.value)) {
+        frameReuseTestResult.textContent = 'Same image';
+    } else {
+        frameReuseTestResult.textContent = 'Different image';
+    }
+    frameReuseTestResult.textContent += ` ${Math.floor(diff * 10000)/100}%`
 }
 
 const frctx = frameRateCanvas.getContext('2d');
@@ -200,4 +294,16 @@ function animateFrameRate() {
     frctx.arc(x, y, r, 0, 2 * Math.PI);
     frctx.fill();
 }
+
 animateFrameRate();
+
+try {
+    MediaInfo.mediaInfoFactory({}, (result) => {
+        mediaInfo = result;
+        console.log(result);
+    });
+} catch (error) {
+    if (error instanceof ReferenceError) {
+        alert("Failed to connect to Unpkg.com\nplease refresh the page and try again");
+    }
+}
