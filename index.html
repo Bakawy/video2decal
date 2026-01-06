@@ -8,21 +8,24 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script src="scripts/omggif.js" defer></script>
     <script src="scripts/helper.js" defer></script>
-    <script type="text/javascript" src="https://unpkg.com/mediainfo.js"></script>
+    <script src="scripts/jszip.min.js" defer></script>
+    <script src="scripts/v2d.js" defer></script>
+    <script type="text/javascript" src="scripts/mediainfo.min.js"></script>
 </head>
 <body>
     <div class="fullWrapper">
         <header>
-            TODO: convert video to images <br>
-            Credits: omggif by Dean McNamee, MediaInfo by MediaArea
+            TODO: replace placeholders, decal data options, test image, decal editor options  <br>
+            <!--Credits: omggif by Dean McNamee, MediaInfo by MediaArea-->
         </header>
         <div id="loader">
             <img src="images/loadingPlaceholderBlack.png" style="z-index: -2;" class="fill">
             <img src="images/loadingPlaceholderWhite.png" alt="loading" class="fill">
             <div id="loadFill" fill=""></div>
+            <p id="loaderText" style="position: absolute; top: 100%; width: 100%; margin: 0; text-align: center;">Text</p>
         </div>
         <main>
-            <input type="file" id="videoUpload" style="display:none" accept=".mp4 .gif">
+            <input type="file" id="videoUpload" style="display:none" accept=".mp4 .gif" onchange="onVideoUpload()">
             <label for="videoUpload" id="videoUploadLabel" class="hoverGrow">
                 <img src="images/upload video.gif" alt="Upload Video" style="width: 100%;">
             </label>
@@ -69,7 +72,7 @@
 
             <div id="frameReuseDiv">
                 <img src="images/box.gif" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
-                <div style="position: relative; padding: 8%; display: flex; flex-direction: column; align-items: center; overflow-y:auto;">
+                <div style="position: relative; padding: 8%; display: flex; flex-direction: column; align-items: center; overflow-y: hidden auto;">
 
                 <img src="images/frame reuse.gif" style="width: 100%;">
                 <div style="display: flex;">
@@ -89,6 +92,13 @@
 
                 </div>
             </div>
+
+            <label id="toDecalEditorLabel" style="position: absolute; bottom: 0; width: calc(70vmin * 0.6); display: none;">
+                <input type="button" value="Convert to Decals" onclick="toDecalEditor()">
+            </label>
+
+            <input id="riqInput" type="file" accept=".riq" onchange="onRiqUpload()">
+            <button id="riqOutput" onclick="downloadRiq()">Download RIQ</button>
         </main>
     </div>
     <script src="scripts/website.js" defer></script>

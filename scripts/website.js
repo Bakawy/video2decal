@@ -1,6 +1,5 @@
 //import {mid, convertGifToVideo} from "/helper.js";
 
-const videoUpload = document.getElementById("videoUpload");
 const videoUploadLabel = document.getElementById("videoUploadLabel");
 const videoDiv = document.getElementById("videoDiv");
 const videoPreview = document.getElementById("videoPreview");
@@ -16,7 +15,10 @@ const compareRight = document.getElementById("compareRight");
 const compareLeftFrame = document.getElementById("compareLeftFrame");
 const compareRightFrame = document.getElementById("compareRightFrame");
 const frameReuseTestResult = document.getElementById("frameReuseTestResult");
+const toDecalEditorLabel = document.getElementById("toDecalEditorLabel");
+const riqOutput = document.getElementById("riqOutput");
 
+const videoUpload = document.getElementById("videoUpload");
 const videoWidthInput = document.getElementById("videoWidthInput");
 const videoHeightInput = document.getElementById("videoHeightInput");
 const frameRateInput = document.getElementById("frameRateInput");
@@ -24,6 +26,9 @@ const jpgQuality = document.getElementById("jpgQuality");//slider
 const jpgQualityValue = document.getElementById("jpgQualityValue");
 const differenceThreshold = document.getElementById("differenceThreshold");
 const checkAllFramesInput = document.getElementById("checkAllFramesInput");
+const isPNG = document.getElementById("png");
+const checkLastInput = document.getElementById("checkLastInput");
+const riqInput = document.getElementById("riqInput");
 
 let mediaInfo;
 let videoFile;
@@ -53,7 +58,7 @@ window.addEventListener("drop", (e) => {
         videoUpload.onchange()
     }
 });
-videoUpload.onchange = onVideoUpload;
+//videoUpload.onchange = onVideoUpload;
 videoWidthInput.onchange = resizeVideoPreview;
 videoHeightInput.onchange = resizeVideoPreview;
 frameRateInput.onchange = function(e) {
@@ -90,7 +95,7 @@ function validateVideo(file) {
     const fileName = file.name;
     const validTypes = ["mp4", "gif", "webm", "mov"];
     let correctType = false
-    for (i=0; i < validTypes.length; i++) {
+    for (let i=0; i < validTypes.length; i++) {
         if (fileName.endsWith(validTypes[i])) {
             correctType = true;
             break;
@@ -103,13 +108,13 @@ function validateVideo(file) {
 function resizeVideoPreview() {
     const width = Math.max(parseInt(videoWidthInput.value), 1)
     const height = Math.max(parseInt(videoHeightInput.value), 1)
-    console.log(`${width} vs ${height}`)
+    //console.log(`${width} vs ${height}`)
     if (width > height) {
-        console.log("width maxxing")
+        //console.log("width maxxing")
         videoDiv.style.width = "70vmin";
         videoDiv.style.height = `${70 * (height/width)}vmin`;
     } else {
-        console.log("height maxxing")
+        //console.log("height maxxing")
         videoDiv.style.height = "70vmin";
         videoDiv.style.width = `${70 * (width/height)}vmin`;
     }
@@ -140,6 +145,13 @@ async function onVideoUpload() {
     };
 }
 
+async function onRiqUpload() {
+    riqOutput.style.display = "none";
+    const file = riqInput.files[0];
+    await loadRiq(file, frameRate);
+    riqOutput.style.display = "block";
+}
+
 function toVideoEditor() {
     //alert("ran");
 
@@ -157,8 +169,9 @@ function toVideoEditor() {
         videoDiv.style.display = "block";
         videoOptionsDiv.style.display = "block";
         frameReuseDiv.style.display = "block";
-        videoWidthInput.value = videoPreview.videoWidth
-        videoHeightInput.value = videoPreview.videoHeight
+        toDecalEditorLabel.style.display = "block";
+        videoWidthInput.value = videoPreview.videoWidth;
+        videoHeightInput.value = videoPreview.videoHeight;
         resizeVideoPreview()
         
         /*
@@ -217,6 +230,14 @@ function toVideoEditor() {
             iterations: 1,
             easing: "ease-out",
         });
+        toDecalEditorLabel.animate([
+            {transform: 'translateY(100%)'},
+            {transform: 'translateY(0%)'},
+        ],{
+            duration: 500,
+            iterations: 1,
+            easing: "ease-out",
+        });
         
     };
 
@@ -230,11 +251,64 @@ function toVideoEditor() {
     });
 }
 
-function setLoadProgress(percent) {
+function toDecalEditor() {
+    videoOptionsDiv.animate([
+        {transform: 'translateX(0%)'},
+        {transform: 'translateX(-100%)'},
+    ],{
+        duration: 500,
+        iterations: 1,
+        easing: "ease-out",
+    });
+    frameReuseDiv.animate([
+        {transform: 'translateX(0%)'},
+        {transform: 'translateX(100%)'},
+    ],{
+        duration: 500,
+        iterations: 1,
+        easing: "ease-out",
+    });
+    toDecalEditorLabel.animate([
+        {transform: 'translateY(0%)'},
+        {transform: 'translateY(100%)'},
+    ],{
+        duration: 500,
+        iterations: 1,
+        easing: "ease-out",
+    });
+
+    const anim = videoDiv.animate([
+        {transform: 'scale(1)'},
+        {transform: 'scale(0)'},
+    ],{
+        duration: 500,
+        iterations: 1,
+        easing: "ease-out",
+    });
+    
+    anim.onfinish = async function() {
+        videoWidth.style.display = "none";
+        videoHeight.style.display = "none";
+        videoDiv.style.display = "none";
+        videoOptionsDiv.style.display = "none";
+        frameReuseDiv.style.display = "none";
+        toDecalEditorLabel.style.display = "none";
+
+        const videoBlob = await (await fetch(videoPreview.src)).blob();
+        await convertVideoToDecal(videoBlob, frameRate, isPNG.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, parseInt(videoWidthInput.value), parseInt(videoHeightInput.value));
+        riqInput.style.display = "block";
+    }
+}
+
+function setLoadProgress(percent, instant = false) {
     let difference = Math.abs(percent - loadFill.style.getPropertyValue("--fill"));
     percent = mid(0, percent, 1);
     loadFill.style.setProperty('--fill', percent);
-    loadFill.style.setProperty('transition', `--fill ${difference * 4}s linear`);
+    loadFill.style.setProperty('transition', `--fill ${instant ? 0 : difference * 4}s linear`);
+}
+
+function setLoaderText(text) {
+    document.getElementById("loaderText").textContent = text;
 }
 
 function hideLoadProgress() {
@@ -242,23 +316,33 @@ function hideLoadProgress() {
     loader.style.display = "none";
 }
 
-function showLoadProgress() {
+function showLoadProgress(text = "") {
     loader.style.display = "block";
+    loader.animate([
+        {transform: 'scale(0)'},
+        {transform: 'scale(1)'},
+    ],{
+        duration: 500,
+        iterations: 1,
+        easing: "ease-out",
+    });
+    setLoaderText(text);
 }
 
 function updateTestDifference() {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", {willReadFrequently: true});
+    ctx.imageSmoothingEnabled = false;
     canvas.width = 64;
     canvas.height = 64;
 
     ctx.drawImage(compareLeft, 0, 0, canvas.width, canvas.height);
-    const dataLeft = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const dataLeft = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.drawImage(compareRight, 0, 0, canvas.width, canvas.height);
-    const dataRight = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const dataRight = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
     const diff = calculateDifferenceScore(dataLeft, dataRight);
     if (diff * 100 < parseFloat(differenceThreshold.value)) {
@@ -298,7 +382,11 @@ function animateFrameRate() {
 animateFrameRate();
 
 try {
-    MediaInfo.mediaInfoFactory({}, (result) => {
+    MediaInfo.mediaInfoFactory({
+        locateFile: (path) => {
+            return "scripts/MediaInfoModule.wasm";
+        }
+    }, (result) => {
         mediaInfo = result;
         console.log(result);
     });

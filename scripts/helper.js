@@ -9,7 +9,7 @@ function sleep(ms) {
 async function convertGifToVideo(gif) {
     return new Promise((resolve, reject) => {
 
-    showLoadProgress();
+    showLoadProgress("Converting GIF to MP4");
     const fileReader = new FileReader();
     //const gifReader = new GifReader(gifData);
 
@@ -27,7 +27,7 @@ async function convertGifToVideo(gif) {
         let duration = 0;
 
         const frames = [];
-        for (i = 0; i < frameCount; i++) {
+        for (let i = 0; i < frameCount; i++) {
             const info = gifReader.frameInfo(i);
 
             const pixels = new Uint8ClampedArray(width * height * 4);
@@ -61,7 +61,7 @@ async function convertGifToVideo(gif) {
         const chunks = [];
         recorder.ondataavailable = e => chunks.push(e.data);
         recorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'video/webm' });
+            const blob = new Blob(chunks, { type: 'video/mp4' });
             //console.log(blob);
             hideLoadProgress();
             resolve(blob)
@@ -127,6 +127,7 @@ function easeInOutQuad(t) {
 
 function getFrameRate(video) {
     return new Promise((resolve) => {
+    //resolve(60);
     const readChunk = (chunkSize, offset) =>
       new Promise((resolve, reject) => {
         const reader = new FileReader()
@@ -156,12 +157,9 @@ function getVideoFrame(file, frame) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     videoElement.src = URL.createObjectURL(file);
-    canvas.style.position = "fixed";
-    canvas.style.top = "0";
-    canvas.style.zIndex = "-5";
 
     videoElement.onloadedmetadata = function() {
-        console.log(`${frame} / ${videoFrameRate} + 0.5/${videoFrameRate} = ${frame/videoFrameRate + 0.5/videoFrameRate}`);
+        //console.log(`${frame} / ${videoFrameRate} + 0.5/${videoFrameRate} = ${frame/videoFrameRate + 0.5/videoFrameRate}`);
         videoElement.currentTime = Math.min(frame/videoFrameRate + 0.5/videoFrameRate, videoElement.duration);
         canvas.width = videoElement.videoWidth;
         canvas.height = videoElement.videoHeight;
@@ -172,30 +170,48 @@ function getVideoFrame(file, frame) {
 
         //document.body.appendChild(canvas);
         //console.log(canvas);
+        URL.revokeObjectURL(videoElement.src);
         resolve(canvas.toDataURL("image/png"))
     }
 
     });
 }
 
-function calculateDifferenceScore(imageData1, imageData2) {
-    const data1 = imageData1.data;
-    const data2 = imageData2.data;
-
+function calculateDifferenceScore(data1, data2) {
+    const tolerence = 2;
     if (data1.length !== data2.length) {
         throw new Error('Image data sizes do not match.');
     }
 
     let totalDifference = 0;
-        for (let i = 0; i < data1.length; i += 4) {
-            const rDiff = Math.abs(data1[i] - data2[i]);
-            const gDiff = Math.abs(data1[i + 1] - data2[i + 1]);
-            const bDiff = Math.abs(data1[i + 2] - data2[i + 2]);
-            const aDiff = Math.abs(data1[i + 3] - data2[i + 3]);
-            totalDifference += rDiff + gDiff + bDiff + aDiff;
-        }
+    for (let i = 0; i < data1.length; i += 4) {
+        const rDiff = Math.max(0, Math.abs(data1[i] - data2[i]) - tolerence);
+        const gDiff = Math.max(0, Math.abs(data1[i + 1] - data2[i + 1]) - tolerence);
+        const bDiff = Math.max(0, Math.abs(data1[i + 2] - data2[i + 2]) - tolerence);
+        const aDiff = Math.max(0, Math.abs(data1[i + 3] - data2[i + 3]) - tolerence);
+        totalDifference += rDiff + gDiff + bDiff + aDiff;
+    }
 
-        // Normalize by the total number of pixels
-        const maxDifference = data1.length * 255;
-        return totalDifference / maxDifference;
+    // Normalize by the total number of pixels
+    const maxDifference = data1.length * 255;
+    return totalDifference / maxDifference;
+}
+
+function differenceScoreWithin(data1, data2, threshold) {
+    const tolerence = 2;
+    if (data1.length !== data2.length) {
+        throw new Error('Image data sizes do not match.');
+    }
+    let totalDifference = 0
+    let maxDifference = data1.length * 255 * threshold
+    for (let i = 0; i < data1.length; i += 4) {
+        const rDiff = Math.max(0, Math.abs(data1[i] - data2[i]) - tolerence);
+        const gDiff = Math.max(0, Math.abs(data1[i + 1] - data2[i + 1]) - tolerence);
+        const bDiff = Math.max(0, Math.abs(data1[i + 2] - data2[i + 2]) - tolerence);
+        const aDiff = Math.max(0, Math.abs(data1[i + 3] - data2[i + 3]) - tolerence);
+        totalDifference += rDiff + gDiff + bDiff + aDiff;
+        if (totalDifference > maxDifference) return false;
+    }
+
+    return true;
 }

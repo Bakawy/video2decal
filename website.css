@@ -213,3 +213,11 @@ main {
 #videoOptionsDiv:has(#jpg:checked) .showJpgQuality {
   display: block;
 }
+
+#riqInput {
+    display: none;
+}
+
+#riqOutput {
+    display: none;
+}
