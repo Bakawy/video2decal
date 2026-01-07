@@ -13,7 +13,7 @@ async function convertVideoToDecal(videoBlob, frameRate, isPNG, jpgQuality, diff
     console.log(keptIndicies);
 
     setLoadProgress(0, true);
-    setLoaderText("Saving video images");
+    setLoaderText("Saving images");
     await getVideoImages(frames, keptIndicies, videoBlob, isPNG, jpgQuality, width, height);
 
     setLoadProgress(0, true);
@@ -33,6 +33,7 @@ async function convertVideoToDecal(videoBlob, frameRate, isPNG, jpgQuality, diff
 }
 
 async function loadRiq(file, frameRate) {
+    showLoadProgress("Opening RIQ");
     const buffer = await new Promise((resolve) => {
         const r = new FileReader();
         r.onload = () => resolve(r.result);
@@ -43,9 +44,15 @@ async function loadRiq(file, frameRate) {
     zip = await JSZip.loadAsync(buffer);
     console.log(zip);
 
+    setLoadProgress(0, true);
+    setLoaderText("Adding images");
     addSprites(isPNG)
+
+    setLoadProgress(0, true);
+    setLoaderText("Charting");
     await addEntities(frameRate, isPNG)
 
+    hideLoadProgress();
 }
 
 async function downloadRiq() {
@@ -190,13 +197,16 @@ function waitForEvent(target, name) {
 }
 
 function addSprites(isPNG) {
-    let maxId = 0
+    let maxId = 0;
+    let frameCount = 0;
     for (const [id, frame] of frameData) {
         if (!frame.image) continue;
+        frameCount++;
         if (id > maxId) maxId = id;
     }
     const digits = String(maxId).length
 
+    let i = 0;
     for (const [id, frame] of frameData) {
         const image = frame.image;
         if (!image) continue;
@@ -204,6 +214,8 @@ function addSprites(isPNG) {
         frame.path = `Resources/Sprites/video_decal_${String(id).padStart(digits, "0")}${isPNG ? ".png" : ".jpeg"}`;
         const base64 = image.substring(image.indexOf('base64,') + 'base64,'.length);
         zip.file(frame.path, base64, {base64: true});
+        i++;
+        setLoadProgress(i/frameCount);
     }
 }
 
@@ -259,6 +271,7 @@ async function addEntities(frameRate, isPNG) {
     let fpb = bpm / (frameRate * 60) //frames per beat
 
     let currentBeat = 0;
+    let i = 0;
     for (const decal of decalOrder) {
         const index = decal.index;
         const length = decal.length;
@@ -308,6 +321,9 @@ async function addEntities(frameRate, isPNG) {
         remix["entities"].push(entity);
 
         currentBeat += length * fpb;
+
+        i++;
+        setLoadProgress(i/decalOrder.length)
     }
 
     const endString = JSON.stringify(remix);

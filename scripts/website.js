@@ -17,6 +17,7 @@ const compareRightFrame = document.getElementById("compareRightFrame");
 const frameReuseTestResult = document.getElementById("frameReuseTestResult");
 const toDecalEditorLabel = document.getElementById("toDecalEditorLabel");
 const riqOutput = document.getElementById("riqOutput");
+const riqInputLabel = document.getElementById("riqInputLabel");
 
 const videoUpload = document.getElementById("videoUpload");
 const videoWidthInput = document.getElementById("videoWidthInput");
@@ -40,7 +41,7 @@ window.onerror = function(e, source, line) {
     alert(text);
 }
 window.addEventListener("dragover", (e) => {
-    if (videoUploadLabel.style.display == "none") return;
+    if (videoUploadLabel.style.display == "none" && riqInputLabel.style.display == "none") return;
 
     const fileItems = [...e.dataTransfer.items].filter(
         (item) => item.kind === "file",
@@ -50,12 +51,17 @@ window.addEventListener("dragover", (e) => {
     }
 });
 window.addEventListener("drop", (e) => {
-    if (videoUploadLabel.style.display == "none") return;
+    if (videoUploadLabel.style.display == "none" && riqInputLabel.style.display == "none") return;
 
     if ([...e.dataTransfer.items].some((item) => item.kind === "file")) {
         e.preventDefault();
-        videoUpload.files = e.dataTransfer.files;
-        videoUpload.onchange()
+        if (videoUploadLabel.style.display != "none") {
+            videoUpload.files = e.dataTransfer.files;
+            videoUpload.onchange();
+        } else if (riqInputLabel.style.display != "none") {
+            riqInput.files = e.dataTransfer.files;
+            riqInput.onchange();
+        }
     }
 });
 //videoUpload.onchange = onVideoUpload;
@@ -105,6 +111,22 @@ function validateVideo(file) {
     return true
 }
 
+function validateRiq(file) {
+    if (!file) return false;
+
+    const fileName = file.name;
+    const validTypes = ["riq"];
+    let correctType = false
+    for (let i=0; i < validTypes.length; i++) {
+        if (fileName.endsWith(validTypes[i])) {
+            correctType = true;
+            break;
+        }
+    }
+    if (!correctType) return "Incorrect file type \n riq";
+    return true
+}
+
 function resizeVideoPreview() {
     const width = Math.max(parseInt(videoWidthInput.value), 1)
     const height = Math.max(parseInt(videoHeightInput.value), 1)
@@ -148,6 +170,13 @@ async function onVideoUpload() {
 async function onRiqUpload() {
     riqOutput.style.display = "none";
     const file = riqInput.files[0];
+
+    validRiq = validateRiq(file);
+    if (validRiq !== true) {
+        if (validRiq) alert(validRiq);
+        return;
+    }
+
     await loadRiq(file, frameRate);
     riqOutput.style.display = "block";
 }
@@ -296,7 +325,7 @@ function toDecalEditor() {
 
         const videoBlob = await (await fetch(videoPreview.src)).blob();
         await convertVideoToDecal(videoBlob, frameRate, isPNG.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, parseInt(videoWidthInput.value), parseInt(videoHeightInput.value));
-        riqInput.style.display = "block";
+        riqInputLabel.style.display = "block";
     }
 }
 

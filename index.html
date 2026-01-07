@@ -15,7 +15,7 @@
 <body>
     <div class="fullWrapper">
         <header>
-            TODO: replace placeholders, decal data options, test image, decal editor options  <br>
+            TODO: decal data options, test image, decal editor options  <br>
             <!--Credits: omggif by Dean McNamee, MediaInfo by MediaArea-->
         </header>
         <div id="loader">
@@ -25,7 +25,7 @@
             <p id="loaderText" style="position: absolute; top: 100%; width: 100%; margin: 0; text-align: center;">Text</p>
         </div>
         <main>
-            <input type="file" id="videoUpload" style="display:none" accept=".mp4 .gif" onchange="onVideoUpload()">
+            <input type="file" id="videoUpload" style="display:none" accept=".mp4 .gif .webm .mov" onchange="onVideoUpload()">
             <label for="videoUpload" id="videoUploadLabel" class="hoverGrow">
                 <img src="images/upload video.gif" alt="Upload Video" style="width: 100%;">
             </label>
@@ -93,12 +93,19 @@
                 </div>
             </div>
 
-            <label id="toDecalEditorLabel" style="position: absolute; bottom: 0; width: calc(70vmin * 0.6); display: none;">
-                <input type="button" value="Convert to Decals" onclick="toDecalEditor()">
+            <label id="toDecalEditorLabel" class="hoverGrow">
+                <input type="button" value="Convert to Decals" onclick="toDecalEditor()" style="display: none;">
+                <img src="images/convert.gif" style="max-width: 100%;">
             </label>
 
-            <input id="riqInput" type="file" accept=".riq" onchange="onRiqUpload()">
-            <button id="riqOutput" onclick="downloadRiq()">Download RIQ</button>
+            <label class="hoverGrow" id="riqInputLabel">
+                <input id="riqInput" type="file" accept=".riq" onchange="onRiqUpload()">
+                <img src="images/upload riq.gif" style="width: 100%; height: 100%;">
+            </label>
+            <label id="riqOutput" class="hoverGrow">
+                <button id="riqOutput" onclick="downloadRiq()" style="display: none;"></button>
+                <img src="images/download riq.gif" style="width: 100%; height: 100%;">
+            </label>
         </main>
     </div>
     <script src="scripts/website.js" defer></script>

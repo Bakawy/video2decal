@@ -12,6 +12,7 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
   text-align: center;
   font-size: 1.5vmin;
   font-family: 'Comic Sans MS';
@@ -220,4 +221,27 @@ main {
 
 #riqOutput {
     display: none;
+    position: absolute;
+    bottom:0;
+    width: 25vmin; 
+    height: 20vmin; 
+    left: 50vw;
+    appearance: none;
+}
+
+#toDecalEditorLabel {
+    position: absolute; 
+    bottom: 0; 
+    width: calc(70vmin * 0.6); 
+    left: calc(50vw - 70vmin * 0.3);
+    display: none;
+}
+
+#riqInputLabel {
+    display: none;
+    position: absolute;
+    bottom:0;
+    width: 25vmin; 
+    height: 20vmin; 
+    left: calc(50vw - 25vmin);
 }
