@@ -1,4 +1,4 @@
-let frameData, decalOrder, zip, originalFileName;
+let frameData, decalOrder, zip, originalFileName, outputURL;
 
 async function convertVideoToDecal(videoBlob, frameRate, isPNG, jpgQuality, differenceThreshold, checkCount, width, height) {
     showLoadProgress("Grabbing video frames");
@@ -50,27 +50,24 @@ async function loadRiq(file, frameRate) {
 
     setLoadProgress(0, true);
     setLoaderText("Charting");
-    await addEntities(frameRate, isPNG)
+    await addEntities(frameRate, isPNG);
 
-    hideLoadProgress();
-}
-
-async function downloadRiq() {
+    setLoadProgress(0, true);
+    setLoaderText("Preparing download");
     const zipBlob = await zip.generateAsync({
         type: "blob",
         compression: "DEFLATE",
     });
-    
-    const filename = `${originalFileName.substring(0, originalFileName.length - 4)}_modified.riq`
-    
-    const url = URL.createObjectURL(zipBlob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    const filename = `${originalFileName.substring(0, originalFileName.length - 4)}_modified.riq`;
+
+    if (outputURL) {URL.revokeObjectURL(outputURL);}
+    outputURL = URL.createObjectURL(zipBlob);
+
+    riqOutput.href = outputURL;
+    riqOutput.download = filename;
+
+
+    hideLoadProgress();
 }
 
 async function getVideoFrames(videoBlob, frameRate) {
@@ -211,7 +208,7 @@ function addSprites(isPNG) {
         const image = frame.image;
         if (!image) continue;
 
-        frame.path = `Resources/Sprites/video_decal_${String(id).padStart(digits, "0")}${isPNG ? ".png" : ".jpeg"}`;
+        frame.path = `Resources/Sprites/${fileNameInput.value}_${String(id).padStart(digits, "0")}${isPNG ? ".png" : ".jpeg"}`;
         const base64 = image.substring(image.indexOf('base64,') + 'base64,'.length);
         zip.file(frame.path, base64, {base64: true});
         i++;
@@ -267,10 +264,22 @@ async function addEntities(frameRate, isPNG) {
     const remix = JSON.parse(jsonString);
 
     console.log(remix);
-    let bpm = remix["tempoChanges"][0]["dynamicData"]["tempo"]
-    let fpb = bpm / (frameRate * 60) //frames per beat
+    let bpm = remix["tempoChanges"][0]["dynamicData"]["tempo"];
+    let bpf = bpm / (frameRate * 60); //beats per frame
 
-    let currentBeat = 0;
+    if (overrideLength.checked) {
+        let frames = 0;
+        for (decal of decalOrder) {
+            const length = decal.length;
+            frames += length;
+        }
+
+        const beats = parseFloat(lengthInput.value);
+
+        bpf = beats/frames;
+    }
+
+    let currentBeat = parseFloat(beatInput.value);
     let i = 0;
     for (const decal of decalOrder) {
         const index = decal.index;
@@ -282,9 +291,9 @@ async function addEntities(frameRate, isPNG) {
             "version": 1,
             "datamodel": "vfx/display decal",
             "beat": currentBeat,
-            "length": fpb * length,
+            "length": bpf * length,
             "dynamicData": {
-                "track": 1.0,
+                "track": parseInt(trackInput.value) - 1,
                 "sprite": frame.path.substring("Resources/Sprites/".length, frame.path.length - (isPNG ? ".png" : ".jpeg").length),
                 "filter": 1,
                 "ease": 0,
@@ -320,7 +329,7 @@ async function addEntities(frameRate, isPNG) {
 
         remix["entities"].push(entity);
 
-        currentBeat += length * fpb;
+        currentBeat += length * bpf;
 
         i++;
         setLoadProgress(i/decalOrder.length)

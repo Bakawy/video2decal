@@ -10,7 +10,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type="number"] {
+input {
   -moz-appearance: textfield;
   appearance: textfield;
   text-align: center;
@@ -219,16 +219,6 @@ main {
     display: none;
 }
 
-#riqOutput {
-    display: none;
-    position: absolute;
-    bottom:0;
-    width: 25vmin; 
-    height: 20vmin; 
-    left: 50vw;
-    appearance: none;
-}
-
 #toDecalEditorLabel {
     position: absolute; 
     bottom: 0; 
@@ -237,11 +227,49 @@ main {
     display: none;
 }
 
-#riqInputLabel {
-    display: none;
+#riqOptions {
     position: absolute;
-    bottom:0;
-    width: 25vmin; 
-    height: 20vmin; 
-    left: calc(50vw - 25vmin);
+    bottom: 0;
+    left: calc(50vw - 65vmin * 0.5);
+    width: 65vmin;
+
+    display: none;
+    justify-content: center;
+}
+
+#riqOptions > *{
+    width: 30%;
+    visibility: hidden;
+}
+
+#riqInputLabel {
+    visibility: visible;    
+}
+
+#editorOptionsDiv {
+    display: none;
+    /*
+    flex-direction: column;
+    align-items: center;
+    */
+
+
+    border: 1.5vmin solid transparent;           /* = frame thickness */
+    border-image-source: url("images/box.gif");
+    border-image-slice: 32 fill;              /* = same number(s) */
+    border-image-repeat: stretch;
+
+    position: absolute;
+    left: 0;
+    max-width: 30vw;
+    /*height: 60%;*/
+    /*background: blue;*/
+}
+
+#lengthLabel {
+    display: none;
+}
+
+#editorOptionsDiv:has(#overrideLength:checked) #lengthLabel {
+  display: block;
 }

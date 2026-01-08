@@ -7,15 +7,49 @@
     <title>Video2Decal</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script src="scripts/omggif.js" defer></script>
-    <script src="scripts/helper.js" defer></script>
     <script src="scripts/jszip.min.js" defer></script>
+    <script src="scripts/mediainfo.min.js"></script>
+    <script>
+        function showError(text) {
+            try {
+                alert(
+                    "Bakawi made a mistake.\n" +
+                    "Please screenshot this message.\n" +
+                    text
+                );
+            } catch (_) {}
+        }
+
+        window.onerror = function (msg, src, line, col, err) {
+            showError(
+                msg + "\n" +
+                src + ":" + line + ":" + col
+            );
+            return false; // do not suppress default logging
+        };
+
+        window.addEventListener("unhandledrejection", function (e) {
+            if (e.reason instanceof Error) {
+                showError(
+                    "Unhandled promise rejection:\n" +
+                    e.reason.message + "\n\n" +
+                    e.reason.stack
+                );
+            } else {
+                showError(
+                    "Unhandled promise rejection:\n" +
+                    String(e.reason)
+                );
+            }
+        });
+    </script>
+    <script src="scripts/helper.js" defer></script>
     <script src="scripts/v2d.js" defer></script>
-    <script type="text/javascript" src="scripts/mediainfo.min.js"></script>
 </head>
 <body>
     <div class="fullWrapper">
         <header>
-            TODO: decal data options, test image, decal editor options  <br>
+            TODO: editor options title, beats per frame adjusting with tempo changes, test image, decal editor options  <br>
             <!--Credits: omggif by Dean McNamee, MediaInfo by MediaArea-->
         </header>
         <div id="loader">
@@ -98,14 +132,33 @@
                 <img src="images/convert.gif" style="max-width: 100%;">
             </label>
 
-            <label class="hoverGrow" id="riqInputLabel">
-                <input id="riqInput" type="file" accept=".riq" onchange="onRiqUpload()">
-                <img src="images/upload riq.gif" style="width: 100%; height: 100%;">
-            </label>
-            <label id="riqOutput" class="hoverGrow">
-                <button id="riqOutput" onclick="downloadRiq()" style="display: none;"></button>
-                <img src="images/download riq.gif" style="width: 100%; height: 100%;">
-            </label>
+            <div id="riqOptions">
+                <label class="hoverGrow" id="riqInputLabel">
+                    <input id="riqInput" type="file" accept=".riq" onchange="onRiqUpload()">
+                    <img src="images/upload riq.gif" style="width: 100%; height: 100%;">
+                </label>
+
+                <label class="hoverGrow" id="generateRiqLabel">
+                    <button id="generateRiq" onclick="generateRiq()" style="width: 100%; height: 100%;">Generate RIQ</button><!--style="display: none;"-->
+                    <!--<img src="images/upload riq.gif" style="width: 100%; height: 100%;">-->
+                </label>
+
+                <a id="riqOutput" class="hoverGrow">
+                    <img src="images/download riq.gif" style="width:100%; height:100%;">
+                </a>
+            </div>
+
+            <div id="editorOptionsDiv">
+            <div style="position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; overflow: hidden;">
+
+            <label>Track: <input type="number" id="trackInput" value="1" style="field-sizing: content;"></label>
+            <label>Beat: <input type="number" id="beatInput" value="0" style="field-sizing: content;"></label>
+            <label>Override Length <input type="checkbox" id="overrideLength"></label>
+            <label id="lengthLabel">Length: <input type="number" id="lengthInput" value="1" style="field-sizing: content;"> beats</label>
+            <label style="display: flex; white-space: nowrap;">Image File Name:<input type="text" id="fileNameInput" value="frame" style="field-sizing: content;">_#</label>
+
+            </div>
+            </div>
         </main>
     </div>
     <script src="scripts/website.js" defer></script>

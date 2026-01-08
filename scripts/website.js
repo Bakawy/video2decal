@@ -16,8 +16,11 @@ const compareLeftFrame = document.getElementById("compareLeftFrame");
 const compareRightFrame = document.getElementById("compareRightFrame");
 const frameReuseTestResult = document.getElementById("frameReuseTestResult");
 const toDecalEditorLabel = document.getElementById("toDecalEditorLabel");
-const riqOutput = document.getElementById("riqOutput");
 const riqInputLabel = document.getElementById("riqInputLabel");
+const editorOptionsDiv = document.getElementById("editorOptionsDiv");
+const riqOptions = document.getElementById("riqOptions");
+const generateRiqLabel = document.getElementById("generateRiqLabel");
+const riqOutput = document.getElementById("riqOutput");
 
 const videoUpload = document.getElementById("videoUpload");
 const videoWidthInput = document.getElementById("videoWidthInput");
@@ -30,16 +33,18 @@ const checkAllFramesInput = document.getElementById("checkAllFramesInput");
 const isPNG = document.getElementById("png");
 const checkLastInput = document.getElementById("checkLastInput");
 const riqInput = document.getElementById("riqInput");
+const trackInput = document.getElementById("trackInput");
+const beatInput = document.getElementById("beatInput");
+const lengthInput = document.getElementById("lengthInput");
+const fileNameInput = document.getElementById("fileNameInput");
+const overrideLength = document.getElementById("overrideLength");
 
 let mediaInfo;
 let videoFile;
 let frameRate = 30;
 let videoFrameRate;
+let riqFile;
 
-window.onerror = function(e, source, line) {
-    let text = `Bakawi did something wrong screenshot this error \n${e}\n${source}:${line}`;
-    alert(text);
-}
 window.addEventListener("dragover", (e) => {
     if (videoUploadLabel.style.display == "none" && riqInputLabel.style.display == "none") return;
 
@@ -167,8 +172,8 @@ async function onVideoUpload() {
     };
 }
 
-async function onRiqUpload() {
-    riqOutput.style.display = "none";
+function onRiqUpload() {
+    generateRiqLabel.style.visibility = "hidden";
     const file = riqInput.files[0];
 
     validRiq = validateRiq(file);
@@ -177,8 +182,14 @@ async function onRiqUpload() {
         return;
     }
 
-    await loadRiq(file, frameRate);
-    riqOutput.style.display = "block";
+    riqFile = file;
+    generateRiqLabel.style.visibility = "visible";
+}
+
+async function generateRiq() {
+    riqOutput.style.visibility = "hidden";
+    await loadRiq(riqFile, frameRate);
+    riqOutput.style.visibility = "visible";
 }
 
 function toVideoEditor() {
@@ -325,7 +336,8 @@ function toDecalEditor() {
 
         const videoBlob = await (await fetch(videoPreview.src)).blob();
         await convertVideoToDecal(videoBlob, frameRate, isPNG.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, parseInt(videoWidthInput.value), parseInt(videoHeightInput.value));
-        riqInputLabel.style.display = "block";
+        riqOptions.style.display = "flex";
+        editorOptionsDiv.style.display = "block";
     }
 }
 
