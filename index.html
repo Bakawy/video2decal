@@ -49,7 +49,7 @@
 <body>
     <div class="fullWrapper">
         <header>
-            TODO: editor options title, beats per frame adjusting with tempo changes, test image, decal editor options  <br>
+            TODO: beats per frame adjusting with tempo changes, test image, webm transparency instructions, decal editor options  <br>
             <!--Credits: omggif by Dean McNamee, MediaInfo by MediaArea-->
         </header>
         <div id="loader">
@@ -139,8 +139,8 @@
                 </label>
 
                 <label class="hoverGrow" id="generateRiqLabel">
-                    <button id="generateRiq" onclick="generateRiq()" style="width: 100%; height: 100%;">Generate RIQ</button><!--style="display: none;"-->
-                    <!--<img src="images/upload riq.gif" style="width: 100%; height: 100%;">-->
+                    <button id="generateRiq" onclick="generateRiq()" style="display: none;">Generate RIQ</button>
+                    <img src="images/generate riq.gif" style="width: 100%; height: 100%;">
                 </label>
 
                 <a id="riqOutput" class="hoverGrow">
@@ -151,6 +151,7 @@
             <div id="editorOptionsDiv">
             <div style="position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; overflow: hidden;">
 
+            <img src="images/editor.gif" style="width: 100%;">
             <label>Track: <input type="number" id="trackInput" value="1" style="field-sizing: content;"></label>
             <label>Beat: <input type="number" id="beatInput" value="0" style="field-sizing: content;"></label>
             <label>Override Length <input type="checkbox" id="overrideLength"></label>
