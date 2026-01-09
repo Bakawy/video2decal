@@ -264,10 +264,12 @@ async function addEntities(frameRate, isPNG) {
     const remix = JSON.parse(jsonString);
 
     console.log(remix);
-    let bpm = remix["tempoChanges"][0]["dynamicData"]["tempo"];
+    let currentBeat = parseFloat(beatInput.value);
+    let bpm = getTempo(currentBeat, remix);
     let bpf = bpm / (frameRate * 60); //beats per frame
+    let isOverride = overrideLength.checked;
 
-    if (overrideLength.checked) {
+    if (isOverride) {
         let frames = 0;
         for (decal of decalOrder) {
             const length = decal.length;
@@ -279,57 +281,42 @@ async function addEntities(frameRate, isPNG) {
         bpf = beats/frames;
     }
 
-    let currentBeat = parseFloat(beatInput.value);
     let i = 0;
     for (const decal of decalOrder) {
         const index = decal.index;
         const length = decal.length;
-
         const frame = frameData.get(index);
-        const entity = {
-            "type": "riq__Entity",
-            "version": 1,
-            "datamodel": "vfx/display decal",
-            "beat": currentBeat,
-            "length": bpf * length,
-            "dynamicData": {
-                "track": parseInt(trackInput.value) - 1,
-                "sprite": frame.path.substring("Resources/Sprites/".length, frame.path.length - (isPNG ? ".png" : ".jpeg").length),
-                "filter": 1,
-                "ease": 0,
-                "layer": 0,
-                "displayLayer": 1,
-                "sticky": false,
-                "sX": 0.0,
-                "sY": 0.0,
-                "sZ": 0.0,
-                "sWidth": 1.0,
-                "sHeight": 1.0,
-                "sRot": 0.0,
-                "sColor": {
-                    "r": 1.0,
-                    "g": 1.0,
-                    "b": 1.0,
-                    "a": 1.0
-                },
-                "eX": 0.0,
-                "eY": 0.0,
-                "eZ": 0.0,
-                "eWidth": 1.0,
-                "eHeight": 1.0,
-                "eRot": 0.0,
-                "eColor": {
-                    "r": 1.0,
-                    "g": 1.0,
-                    "b": 1.0,
-                    "a": 1.0
-                }
+
+        let framesLeft = length 
+
+        //tempo adjustment
+        if (!isOverride) {
+            tempoChanges = remix["tempoChanges"];
+            for (const tc of tempoChanges) {
+                const tcBeat = tc["beat"];
+                if (tcBeat <= currentBeat) continue;
+
+                const beatsToTc = tcBeat - currentBeat;
+                const framesToTc = beatsToTc / bpf;
+
+                if (framesToTc > framesLeft) break;
+
+                const tcBpm = tc["dynamicData"]["tempo"];
+
+                addEntity(currentBeat, beatsToTc, remix, frame);
+                framesLeft -= framesToTc;
+                currentBeat = tcBeat;
+
+                bpm = tcBpm;
+                bpf = bpm / (frameRate * 60); //beats per frame
             }
-        };
+        }
 
-        remix["entities"].push(entity);
+        const remainingBeats = framesLeft * bpf;
 
-        currentBeat += length * bpf;
+        addEntity(currentBeat, remainingBeats, remix, frame)
+
+        currentBeat += remainingBeats;
 
         i++;
         setLoadProgress(i/decalOrder.length)
@@ -344,6 +331,65 @@ async function addEntities(frameRate, isPNG) {
     data.set(jsonBytes, bom.length);
 
     zip.file("remix.json", data, {binary: true});
+}
+
+function addEntity(beat, length, remix, frame) {
+    const entity = {
+        "type": "riq__Entity",
+        "version": 1,
+        "datamodel": "vfx/display decal",
+        "beat": beat,
+        "length": length,
+        "dynamicData": {
+            "track": parseInt(trackInput.value) - 1,
+            "sprite": frame.path.substring("Resources/Sprites/".length, frame.path.length - (isPNG ? ".png" : ".jpeg").length),
+            "filter": 1,
+            "ease": 0,
+            "layer": 0,
+            "displayLayer": 1,
+            "sticky": false,
+            "sX": 0.0,
+            "sY": 0.0,
+            "sZ": 0.0,
+            "sWidth": 1.0,
+            "sHeight": 1.0,
+            "sRot": 0.0,
+            "sColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "eX": 0.0,
+            "eY": 0.0,
+            "eZ": 0.0,
+            "eWidth": 1.0,
+            "eHeight": 1.0,
+            "eRot": 0.0,
+            "eColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            }
+        }
+    };
+
+    remix["entities"].push(entity);
+}
+
+function getTempo(beat, remix) {
+    const tempoChanges = remix["tempoChanges"];
+
+    let tempo = remix["tempoChanges"][0]["dynamicData"]["tempo"];
+    let changeBeat = 0;
+    for (tc of tempoChanges) {
+        if (tc["beat"] > beat) break;
+        tempo = tc["dynamicData"]["tempo"];
+        changeBeat = tc["beat"];
+    }
+
+    return tempo;
 }
 
 async function seekTo(video, t) {
