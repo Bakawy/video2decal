@@ -280,3 +280,29 @@ main {
     flex-direction: column;
     justify-content: center;
 }
+
+#decalOptionsDiv {
+    display: none;
+
+    border: 1.5vmin solid transparent;           /* = frame thickness */
+    border-image-source: url("images/box.gif");
+    border-image-slice: 32 fill;              /* = same number(s) */
+    border-image-repeat: stretch;
+
+    position: absolute;
+    right: 0;
+    max-width: max(47vw - 25vmin, 22vw);
+    /*height: 60%;   22vw*/
+    /*background: blue;*/
+}
+
+#decalOptionsDiv:has(#easeInput option[value="1"]:checked) #startOptions {
+    display: none;
+}
+
+#startOptions {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center;
+}

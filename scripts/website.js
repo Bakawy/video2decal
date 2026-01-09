@@ -23,6 +23,7 @@ const generateRiqLabel = document.getElementById("generateRiqLabel");
 const riqOutput = document.getElementById("riqOutput");
 const testImageDiv = document.getElementById("testImageDiv");
 const testImageCanvas = document.getElementById("testImageCanvas");
+const decalOptionsDiv = document.getElementById("decalOptionsDiv");
 
 const videoUpload = document.getElementById("videoUpload");
 const videoWidthInput = document.getElementById("videoWidthInput");
@@ -353,6 +354,7 @@ function toDecalEditor() {
         await convertVideoToDecal(videoBlob, frameRate, isPNG.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, width, height);
         riqOptions.style.display = "flex";
         editorOptionsDiv.style.display = "block";
+        decalOptionsDiv.style.display = "block";
         testImageDiv.style.display = "flex"
         updateTestImage();
     }

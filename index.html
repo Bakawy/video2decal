@@ -82,7 +82,7 @@
 
             <img src="images/frame rate.gif" width="100%">
             <canvas id="frameRateCanvas"></canvas>
-            <input type="number" id="frameRateInput" placeholder="30" value="30" min="1" step="1" style="width: 10%; z-index: 1;">
+            <input type="number" id="frameRateInput" placeholder="30" value="30" min="1" style="width: 10%; z-index: 1;">
 
             <img src="images/file type.gif" width="100%">
 
@@ -167,6 +167,85 @@
                 <label style="max-width: 100%;">Decal: <input id="frameSelect" type="number" placeholder="0" value="0" min="0" step="1" style="field-sizing: content;"></input></label>
                 <label>Border: <input id="showBorder" checked type="checkbox" onchange="updateTestImage()"></input></label>
                 <button onclick="this.disabled = true; downloadTestImage(); this.disabled = false;" style="width: fit-content;">Download</button>
+            </div>
+
+            <div id="decalOptionsDiv">
+            <div style="position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; overflow: hidden;">
+            UNFINISHED
+            <img src="images/editor.gif" style="width: 100%;">
+
+            <label>Filter Mode <select>
+                <option value="0">Nearest</option>
+                <option value="1" selected>Bilinear</option>
+            </select></label>
+            <label>Ease <select id="easeInput">
+                <option value="0">Linear</option>
+                <option value="1" selected>Instant</option>
+                <option value="2">EaseInQuad</option>
+                <option value="3">EaseOutQuad</option>
+                <option value="4">EaseInOutQuad</option>
+                <option value="5">EaseInCubic</option>
+                <option value="6">EaseOutCubic</option>
+                <option value="7">EaseInOutCubic</option>
+                <option value="8">EaseInQuart</option>
+                <option value="9">EaseOutQuart</option>
+                <option value="10">EaseInOutQuart</option>
+                <option value="11">EaseInQuint</option>
+                <option value="12">EaseOutQuint</option>
+                <option value="13">EaseInOutQuint</option>
+                <option value="14">EaseInSine</option>
+                <option value="15">EaseOutSine</option>
+                <option value="16">EaseInOutSine</option>
+                <option value="17">EaseInExpo</option>
+                <option value="18">EaseOutExpo</option>
+                <option value="19">EaseInOutExpo</option>
+                <option value="20">EaseInCirc</option>
+                <option value="21">EaseOutCirc</option>
+                <option value="22">EaseInOutCirc</option>
+                <option value="23">EaseInBounce</option>
+                <option value="24">EaseOutBounce</option>
+                <option value="25">EaseInOutBounce</option>
+                <option value="26">EaseInBack</option>
+                <option value="27">EaseOutBack</option>
+                <option value="28">EaseInOutBack</option>
+                <option value="29">EaseInElastic</option>
+                <option value="30">EaseOutElastic</option>
+                <option value="31">EaseInOutElastic</option>
+                <option value="32">Spring</option>
+                <option value="33">EaseOutInQuad</option>
+                <option value="34">EaseOutInCubic</option>
+                <option value="35">EaseOutInQuart</option>
+                <option value="36">EaseOutInQuint</option>
+                <option value="37">EaseOutInSine</option>
+                <option value="38">EaseOutInExpo</option>
+                <option value="39">EaseOutInCirc</option>
+                <option value="40">EaseOutInBounce</option>
+                <option value="41">EaseOutInBack</option>
+                <option value="42">EaseOutInElastic</option>
+            </select></label>
+            <label>Layer <input type="number" id="" placeholder="0" value="0" min="-32768" max="32767" step="1" style="field-sizing: content;"></label>
+            <label>Display Layer <select>
+                <option value="0">Game</option>
+                <option value="1" selected>Decal</option>
+                <option value="2">Overlay</option>
+             </select></label>
+            <div id="startOptions">
+                <label>Start X <input type="number" id="" placeholder="0" value="0" style="field-sizing: content;"></label>
+                <label>Start Y <input type="number" id="" placeholder="0" value="0" style="field-sizing: content;"></label>
+                <label>Start Z <input type="number" id="" placeholder="0" value="0" style="field-sizing: content;"></label>
+                <label>Start Width <input type="number" id="" placeholder="1" value="1" style="field-sizing: content;"></label>
+                <label>Start Height <input type="number" id="" placeholder="1" value="1" style="field-sizing: content;"></label>
+                <label>Start Rotation <input type="number" id="" placeholder="0" value="0" style="field-sizing: content;"></label>
+                <label>Start Color #<input type="text" id="" value="ffffffff" style="text-transform: uppercase; field-sizing: content;"></label>
+            </div>
+            <label>End X <input type="number" id="" placeholder="0" value="0" style="field-sizing: content;"></label>
+            <label>End Y <input type="number" id="" placeholder="0" value="0" style="field-sizing: content;"></label>
+            <label>End Z <input type="number" id="" placeholder="0" value="0" style="field-sizing: content;"></label>
+            <label>End Width <input type="number" id="" placeholder="1" value="1" style="field-sizing: content;"></label>
+            <label>End Height <input type="number" id="" placeholder="1" value="1" style="field-sizing: content;"></label>
+            <label>End Rotation <input type="number" id="" placeholder="0" value="0" style="field-sizing: content;"></label>
+            <label>End Color #<input type="text" id="" value="ffffffff" style="text-transform: uppercase; field-sizing: content;"></label>
+            </div>
             </div>
         </main>
     </div>

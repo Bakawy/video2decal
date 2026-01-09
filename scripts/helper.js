@@ -160,7 +160,7 @@ function getVideoFrame(file, frame) {
 
     videoElement.onloadedmetadata = function() {
         //console.log(`${frame} / ${videoFrameRate} + 0.5/${videoFrameRate} = ${frame/videoFrameRate + 0.5/videoFrameRate}`);
-        videoElement.currentTime = Math.min(frame/videoFrameRate + 0.5/videoFrameRate, videoElement.duration);
+        videoElement.currentTime = Math.min(frame/videoFrameRate + 0.5/videoFrameRate, videoElement.duration);//Math.min(frame/videoFrameRate + 0.5/videoFrameRate, videoElement.duration);
         canvas.width = videoElement.videoWidth;
         canvas.height = videoElement.videoHeight;
     }
@@ -234,4 +234,5 @@ function validateNumberInput(e) {
     if (input.step === "1") value = Math.round(value);
 
   input.value = String(value);
+  input.placeholder = input.value;
 }

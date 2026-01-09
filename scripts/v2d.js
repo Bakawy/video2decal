@@ -74,6 +74,7 @@ async function getVideoFrames(videoBlob, frameRate) {
     await waitForEvent(videoElement, "loadedmetadata");
 
     const duration = videoElement.duration;
+    const spf = 1/videoFrameRate; //seconds per frame
     const dt = 1/frameRate;
     const w = 64;
     const h = 64;
@@ -81,15 +82,17 @@ async function getVideoFrames(videoBlob, frameRate) {
     canvas.width = w;
     canvas.height =  h;
 
-    for (let time = dt/2; time < duration; time += dt) {
-        await seekTo(videoElement, time);
+    for (let time = 0; time < duration; time += dt) {
+        const seekTime = Math.floor(time / spf) * spf + 0.5 * spf;
+        console.log(seekTime);
+        await seekTo(videoElement, seekTime);
 
         ctx.clearRect(0, 0, w, h);
         ctx.drawImage(videoElement, 0, 0, w, h);
         
         frames.set(index, {
             index: index,
-            time: time,
+            time: seekTime,
             data: ctx.getImageData(0, 0, w, h).data,
         });
         index++;
