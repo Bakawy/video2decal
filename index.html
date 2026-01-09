@@ -65,15 +65,15 @@
             </label>
 
             <div id="videoDiv">
-            <div id="videoWidth" class="videoEditor">
-                <img src="images/length.gif" class="fillBottom">
-                <input type="number" id="videoWidthInput" value="0" min="1">
-            </div>
-            <div id="videoHeight" class="videoEditor">
-                <img src="images/lengthRotated.gif" class="fillLeft">
-                <input type="number" id="videoHeightInput" value="0" min="1">
-            </div>
-            <video controls autoplay muted loop id="videoPreview" class="videoEditor"></video>
+                <div id="videoWidth" class="videoEditor">
+                    <img src="images/length.gif" class="fillBottom">
+                    <input type="number" id="videoWidthInput" value="1" placeholder="1" min="1" step="1">
+                </div>
+                <div id="videoHeight" class="videoEditor">
+                    <img src="images/lengthRotated.gif" class="fillLeft">
+                    <input type="number" id="videoHeightInput" value="1" placeholder="1" min="1" step="1">
+                </div>
+                <video controls autoplay muted loop id="videoPreview" class="videoEditor"></video>
             </div>
 
             <div id="videoOptionsDiv">
@@ -82,7 +82,7 @@
 
             <img src="images/frame rate.gif" width="100%">
             <canvas id="frameRateCanvas"></canvas>
-            <input type="number" id="frameRateInput" value="30" min="1" style="width: 10%; z-index: 1;">
+            <input type="number" id="frameRateInput" placeholder="30" value="30" min="1" step="1" style="width: 10%; z-index: 1;">
 
             <img src="images/file type.gif" width="100%">
 
@@ -98,7 +98,7 @@
             </div>
 
             <!--<span id="jpgQualityValue">80</span>-->
-            <label for="jpgQuality" class="showJpgQuality" style="text-align: center; width: 100%;">JPG Quality: <input id="jpgQualityValue" type="number" value="80" min="0" max="100" style="width: 8%;">%</label>
+            <label for="jpgQuality" class="showJpgQuality" style="text-align: center; width: 100%;">JPG Quality: <input id="jpgQualityValue" type="number" value="80" placeholder="80" min="0" max="100" style="width: 8%;">%</label>
             <input type="range" min="0" max="100" value="80" id="jpgQuality" class="showJpgQuality" style="width: 50%;">
 
             </div>
@@ -111,24 +111,24 @@
                 <img src="images/frame reuse.gif" style="width: 100%;">
                 <div style="display: flex;">
                     <div style="width: 50%; display: flex; flex-direction: column; align-items: center;">
-                        <img id="compareLeft" style="border: 0.2vmin solid white; width: 100%;">
-                        <input id="compareLeftFrame" type="number" value="0" min="0" style="width: 50%;">
+                        <img id="compareLeft" style="border: 0.2vmin solid white; width: 100%; background-image: url('images/Checkerboard_pattern.png'); background-size: 4vmin;">
+                        <input id="compareLeftFrame" type="number" placeholder="0" value="0" min="0" step="1" style="width: 50%;">
                     </div>
                     <div style="width: 50%; display: flex; flex-direction: column; align-items: center;">
-                        <img id="compareRight" style="border: 0.2vmin solid white; width: 100%;">
-                        <input id="compareRightFrame" type="number" value="1" min="0" style="width: 50%;">
+                        <img id="compareRight" style="border: 0.2vmin solid white; width: 100%; background-image: url('images/Checkerboard_pattern.png'); background-size: 4vmin;">
+                        <input id="compareRightFrame" type="number" placeholder="1" value="1" min="0" step="1" style="width: 50%;">
                     </div>
                 </div>
                 <p id="frameReuseTestResult">Calculating...</p>
-                <label style="width: 100%;">Maximum Allowed Difference <input id="differenceThreshold" type="number" value="0.1" min="0" max="100">%</label>
+                <label style="width: 100%;">Maximum Allowed Difference <input id="differenceThreshold" type="number" placeholder="0.1" value="0.1" min="0" max="100">%</label>
                 <label style="width: 100%;">Check All Frames<input id="checkAllFramesInput" type="checkbox" checked></label>
-                <label style="width: 100%; display: none;" id="checkLastLabel">Check Last <input id="checkLastInput" type="number" value="10" min="0" style="width: 7%;"> Frames</label>
+                <label style="width: 100%; display: none;" id="checkLastLabel">Check Last <input id="checkLastInput" type="number" placeholder="10" value="10" min="0" step="1" style="width: 7%;"> Frames</label>
 
                 </div>
             </div>
 
             <label id="toDecalEditorLabel" class="hoverGrow">
-                <input type="button" value="Convert to Decals" onclick="toDecalEditor()" style="display: none;">
+                <input type="button" value="Convert to Decals" onclick="this.disabled = true; toDecalEditor();" style="display: none;">
                 <img src="images/convert.gif" style="max-width: 100%;">
             </label>
 
@@ -152,13 +152,21 @@
             <div style="position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; overflow: hidden;">
 
             <img src="images/editor.gif" style="width: 100%;">
-            <label>Track: <input type="number" id="trackInput" value="1" style="field-sizing: content;"></label>
-            <label>Beat: <input type="number" id="beatInput" value="0" style="field-sizing: content;"></label>
+            <label>Track: <input type="number" id="trackInput" placeholder="1" value="1" step="1" style="field-sizing: content;"></label>
+            <label>Beat: <input type="number" id="beatInput" placeholder="0" value="0" style="field-sizing: content;"></label>
             <label>Override Length <input type="checkbox" id="overrideLength"></label>
-            <label id="lengthLabel">Length: <input type="number" id="lengthInput" value="1" style="field-sizing: content;"> beats</label>
+            <label id="lengthLabel">Length: <input type="number" id="lengthInput" placeholder="1" value="1" min="0.01" style="field-sizing: content;"> beats</label>
             <label style="display: flex; white-space: nowrap;">Image File Name:<input type="text" id="fileNameInput" value="frame" style="field-sizing: content;">_#</label>
 
             </div>
+            </div>
+
+            <div id="testImageDiv">
+                <img src="images/test image.gif" style="width: 100%;">
+                <canvas id="testImageCanvas" style="width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; background-image: url('images/Checkerboard_pattern.png'); background-size: 4vmin;"></canvas>
+                <label style="max-width: 100%;">Decal: <input id="frameSelect" type="number" placeholder="0" value="0" min="0" step="1" style="field-sizing: content;"></input></label>
+                <label>Border: <input id="showBorder" checked type="checkbox" onchange="updateTestImage()"></input></label>
+                <button onclick="this.disabled = true; downloadTestImage(); this.disabled = false;" style="width: fit-content;">Download</button>
             </div>
         </main>
     </div>

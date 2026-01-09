@@ -24,12 +24,6 @@ async function convertVideoToDecal(videoBlob, frameRate, isPNG, jpgQuality, diff
 
     frameData = frames;
     decalOrder = frameOrder;
-    /*
-    const link = document.createElement('a');
-    link.download = "test.png";
-    link.href = frames[100].data;
-    link.click();
-    */
 }
 
 async function loadRiq(file, frameRate) {
@@ -65,7 +59,6 @@ async function loadRiq(file, frameRate) {
 
     riqOutput.href = outputURL;
     riqOutput.download = filename;
-
 
     hideLoadProgress();
 }

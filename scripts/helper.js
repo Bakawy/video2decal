@@ -215,3 +215,23 @@ function differenceScoreWithin(data1, data2, threshold) {
 
     return true;
 }
+
+function validateNumberInput(e) {
+  const input = e.target;
+  //if (!(input instanceof HTMLInputElement) || input.type !== "number") return;
+
+  let value = Number(input.value === "" ? NaN : input.value);
+
+  if (!Number.isFinite(value)) {
+    const ph = Number(input.placeholder);
+    value = Number.isFinite(ph) ? ph : 0;
+  }
+
+  const min = Number.isFinite(input.minAsNumber) ? input.minAsNumber : -Infinity;
+  const max = Number.isFinite(input.maxAsNumber) ? input.maxAsNumber : Infinity;
+
+  value = Math.min(Math.max(value, min), max);
+    if (input.step === "1") value = Math.round(value);
+
+  input.value = String(value);
+}

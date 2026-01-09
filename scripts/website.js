@@ -21,6 +21,8 @@ const editorOptionsDiv = document.getElementById("editorOptionsDiv");
 const riqOptions = document.getElementById("riqOptions");
 const generateRiqLabel = document.getElementById("generateRiqLabel");
 const riqOutput = document.getElementById("riqOutput");
+const testImageDiv = document.getElementById("testImageDiv");
+const testImageCanvas = document.getElementById("testImageCanvas");
 
 const videoUpload = document.getElementById("videoUpload");
 const videoWidthInput = document.getElementById("videoWidthInput");
@@ -38,6 +40,8 @@ const beatInput = document.getElementById("beatInput");
 const lengthInput = document.getElementById("lengthInput");
 const fileNameInput = document.getElementById("fileNameInput");
 const overrideLength = document.getElementById("overrideLength");
+const frameSelect = document.getElementById("frameSelect");
+const showBorder = document.getElementById("showBorder");
 
 let mediaInfo;
 let videoFile;
@@ -69,6 +73,12 @@ window.addEventListener("drop", (e) => {
         }
     }
 });
+document.addEventListener("change", (e) => {
+  if (e.target.matches("input[type=number]")) {
+    validateNumberInput(e);
+  }
+}, { capture: true });
+
 //videoUpload.onchange = onVideoUpload;
 videoWidthInput.onchange = resizeVideoPreview;
 videoHeightInput.onchange = resizeVideoPreview;
@@ -99,6 +109,7 @@ checkAllFramesInput.oninput = function () {
     label.style.display = "none";
     if (!checkAllFramesInput.checked) label.style.display = "block";
 }
+frameSelect.onchange = updateTestImage;
 
 function validateVideo(file) {
     if (!file) return false;
@@ -210,6 +221,8 @@ function toVideoEditor() {
         videoOptionsDiv.style.display = "block";
         frameReuseDiv.style.display = "block";
         toDecalEditorLabel.style.display = "block";
+        videoWidthInput.placeholder = videoPreview.videoWidth;
+        videoHeightInput.placeholder = videoPreview.videoHeight;
         videoWidthInput.value = videoPreview.videoWidth;
         videoHeightInput.value = videoPreview.videoHeight;
         resizeVideoPreview()
@@ -335,9 +348,13 @@ function toDecalEditor() {
         toDecalEditorLabel.style.display = "none";
 
         const videoBlob = await (await fetch(videoPreview.src)).blob();
-        await convertVideoToDecal(videoBlob, frameRate, isPNG.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, parseInt(videoWidthInput.value), parseInt(videoHeightInput.value));
+        const width = parseInt(videoWidthInput.value);
+        const height = parseInt(videoHeightInput.value);
+        await convertVideoToDecal(videoBlob, frameRate, isPNG.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, width, height);
         riqOptions.style.display = "flex";
         editorOptionsDiv.style.display = "block";
+        testImageDiv.style.display = "flex"
+        updateTestImage();
     }
 }
 
@@ -392,6 +409,72 @@ function updateTestDifference() {
         frameReuseTestResult.textContent = 'Different image';
     }
     frameReuseTestResult.textContent += ` ${Math.floor(diff * 10000)/100}%`
+}
+
+function updateTestImage() {
+    let frameIndex = Math.min(Math.max(0, parseInt(frameSelect.value)), frameData.size) || 0;
+    
+    const doBorder = showBorder.checked;
+
+    while (frameIndex > 0) {
+        if (!frameData.get(frameIndex)) {
+            frameIndex--;
+            continue;
+        }
+        if (frameData.get(frameIndex).image) break;
+        frameIndex--;
+    }
+    frameSelect.value = frameIndex;
+    const frame = frameData.get(frameIndex);
+    const image = frame.image;
+
+    const img = new Image();
+
+    img.onload = function() {
+        const width = img.width;
+        const height = img.height;
+
+        if (width > height) {
+            //console.log("width maxxing")
+            testImageDiv.style.width = "50vmin";
+            testImageDiv.style.height = `${50 * (height/width)}vmin`;
+        } else {
+            //console.log("height maxxing")
+            testImageDiv.style.height = "50vmin";
+            testImageDiv.style.width = `${50 * (width/height)}vmin`;
+        }
+
+        const ctx = testImageCanvas.getContext("2d");
+        ctx.clearRect(0, 0, testImageCanvas.width, testImageCanvas.height)
+        ctx.drawImage(img, 0, 0, testImageCanvas.width, testImageCanvas.height);
+
+        if (doBorder) {
+            ctx.fillStyle = 'white';
+            const borderSize = Math.min(testImageCanvas.width, testImageCanvas.height) * 0.05;
+
+            ctx.fillRect(0, 0, testImageCanvas.width, borderSize); // Top
+            ctx.fillRect(0, testImageCanvas.height - borderSize, testImageCanvas.width, borderSize); // Bottom
+            ctx.fillRect(0, 0, borderSize, testImageCanvas.height); // Left
+            ctx.fillRect(testImageCanvas.width - borderSize, 0, borderSize, testImageCanvas.height); // Right
+        }
+    }
+
+    img.crossOrigin = "anonymous";
+    img.src = image;
+}
+
+function downloadTestImage() {
+    const fileType = isPNG.checked ? "png" : "jpeg";
+    const fileName = `test_image.${fileType}`;
+    testImageCanvas.toBlob((blob) => {
+        const file = new File([blob], fileName, {type: `image/${fileType}`});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }, `image/${fileType}`);
+
 }
 
 const frctx = frameRateCanvas.getContext('2d');

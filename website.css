@@ -18,6 +18,11 @@ input {
   font-family: 'Comic Sans MS';
 }
 
+button {
+    font-size: 1.5vmin;
+    font-family: 'Comic Sans MS';
+}
+
 body {
     background-color: black;
     color: white;
@@ -256,15 +261,22 @@ main {
 
     position: absolute;
     left: 0;
-    max-width: 30vw;
-    /*height: 60%;*/
+    max-width: max(47vw - 25vmin, 22vw);
+    /*height: 60%;   22vw*/
     /*background: blue;*/
+}
+
+#editorOptionsDiv:has(#overrideLength:checked) #lengthLabel {
+  display: block;
 }
 
 #lengthLabel {
     display: none;
 }
 
-#editorOptionsDiv:has(#overrideLength:checked) #lengthLabel {
-  display: block;
+#testImageDiv {
+    display: none;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
 }
