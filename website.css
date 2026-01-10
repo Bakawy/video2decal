@@ -18,6 +18,11 @@ input {
   font-family: 'Comic Sans MS';
 }
 
+select {
+    font-size: 1.5vmin;
+    font-family: 'Comic Sans MS';
+}
+
 button {
     font-size: 1.5vmin;
     font-family: 'Comic Sans MS';
@@ -297,6 +302,14 @@ main {
 }
 
 #decalOptionsDiv:has(#easeInput option[value="1"]:checked) #startOptions {
+    display: none;
+}
+
+#decalOptionsDiv:has(#displayLayerInput option[value="0"]:checked) #stickyInputLabel {
+    display: block;
+}
+
+#stickyInputLabel {
     display: none;
 }
 

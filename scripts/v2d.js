@@ -277,13 +277,19 @@ async function addEntities(frameRate, isPNG) {
         bpf = beats/frames;
     }
 
+    let totalFrames = 0;
+    for (const decal of decalOrder) {
+        totalFrames += decal.length;
+    }
+
     let i = 0;
+    chartedFrames = 0;
     for (const decal of decalOrder) {
         const index = decal.index;
         const length = decal.length;
         const frame = frameData.get(index);
 
-        let framesLeft = length 
+        let framesLeft = length;
 
         //tempo adjustment
         if (!isOverride) {
@@ -299,7 +305,9 @@ async function addEntities(frameRate, isPNG) {
 
                 const tcBpm = tc["dynamicData"]["tempo"];
 
-                addEntity(currentBeat, beatsToTc, remix, frame);
+                let progressStart = (chartedFrames + (length - framesLeft)) / totalFrames;
+                let progressEnd = (chartedFrames + (length - framesLeft) + framesToTc) / totalFrames
+                addEntity(currentBeat, beatsToTc, progressStart, progressEnd, remix, frame);
                 framesLeft -= framesToTc;
                 currentBeat = tcBeat;
 
@@ -310,11 +318,14 @@ async function addEntities(frameRate, isPNG) {
 
         const remainingBeats = framesLeft * bpf;
 
-        addEntity(currentBeat, remainingBeats, remix, frame)
+        let progressStart = (chartedFrames + (length - framesLeft)) / totalFrames;
+        let progressEnd = (chartedFrames + length) / totalFrames
+        addEntity(currentBeat, remainingBeats, progressStart, progressEnd, remix, frame)
 
         currentBeat += remainingBeats;
 
         i++;
+        chartedFrames += length;
         setLoadProgress(i/decalOrder.length)
     }
 
@@ -329,7 +340,30 @@ async function addEntities(frameRate, isPNG) {
     zip.file("remix.json", data, {binary: true});
 }
 
-function addEntity(beat, length, remix, frame) {
+function addEntity(beat, length, progressStart, progressEnd, remix, frame) {
+    const filter = parseInt(document.getElementById("filterInput").value);
+    const ease = parseInt(document.getElementById("easeInput").value);
+    const layer = parseInt(document.getElementById("layerInput").value);
+    const displayLayer = parseInt(document.getElementById("displayLayerInput").value);
+    const sticky = document.getElementById("stickyInput").checked;
+    const sX = parseFloat(document.getElementById("sXInput").value);
+    const sY = parseFloat(document.getElementById("sYInput").value);
+    const sZ = parseFloat(document.getElementById("sZInput").value);
+    const sWidth = parseFloat(document.getElementById("sWidthInput").value);
+    const sHeight = parseFloat(document.getElementById("sHeightInput").value);
+    const sRot = parseFloat(document.getElementById("sRotInput").value);
+    const sColor = document.getElementById("sColorInput").value;
+    const eX = parseFloat(document.getElementById("eXInput").value);
+    const eY = parseFloat(document.getElementById("eYInput").value);
+    const eZ = parseFloat(document.getElementById("eZInput").value);
+    const eWidth = parseFloat(document.getElementById("eWidthInput").value);
+    const eHeight = parseFloat(document.getElementById("eHeightInput").value);
+    const eRot = parseFloat(document.getElementById("eRotInput").value);
+    const eColor = document.getElementById("eColorInput").value;
+
+    const [sR, sG, sB, sA] = hexToRGBA(sColor);
+    const [eR, eG, eB, eA] = hexToRGBA(eColor);
+
     const entity = {
         "type": "riq__Entity",
         "version": 1,
@@ -339,34 +373,34 @@ function addEntity(beat, length, remix, frame) {
         "dynamicData": {
             "track": parseInt(trackInput.value) - 1,
             "sprite": frame.path.substring("Resources/Sprites/".length, frame.path.length - (isPNG ? ".png" : ".jpeg").length),
-            "filter": 1,
-            "ease": 0,
-            "layer": 0,
-            "displayLayer": 1,
-            "sticky": false,
-            "sX": 0.0,
-            "sY": 0.0,
-            "sZ": 0.0,
-            "sWidth": 1.0,
-            "sHeight": 1.0,
-            "sRot": 0.0,
+            "filter": filter,
+            "ease": ease == 1 ? 1 : 0,
+            "layer": layer,
+            "displayLayer": displayLayer,
+            "sticky": sticky,
+            "sX": interpolate(sX, eX, progressStart, ease),
+            "sY": interpolate(sY, eY, progressStart, ease),
+            "sZ": interpolate(sZ, eZ, progressStart, ease),
+            "sWidth": interpolate(sWidth, eWidth, progressStart, ease),
+            "sHeight": interpolate(sHeight, eHeight, progressStart, ease),
+            "sRot": interpolate(sRot, eRot, progressStart, ease),
             "sColor": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
+                "r": interpolate(sR, eR, progressStart, ease),
+                "g": interpolate(sG, eG, progressStart, ease),
+                "b": interpolate(sB, eB, progressStart, ease),
+                "a": interpolate(sA, eA, progressStart, ease)
             },
-            "eX": 0.0,
-            "eY": 0.0,
-            "eZ": 0.0,
-            "eWidth": 1.0,
-            "eHeight": 1.0,
-            "eRot": 0.0,
+            "eX": interpolate(sX, eX, progressEnd, ease),
+            "eY": interpolate(sY, eY, progressEnd, ease),
+            "eZ": interpolate(sZ, eZ, progressEnd, ease),
+            "eWidth": interpolate(sWidth, eWidth, progressEnd, ease),
+            "eHeight": interpolate(sHeight, eHeight, progressEnd, ease),
+            "eRot": interpolate(sRot, eRot, progressEnd, ease),
             "eColor": {
-                "r": 1.0,
-                "g": 1.0,
-                "b": 1.0,
-                "a": 1.0
+                "r": interpolate(sR, eR, progressEnd, ease),
+                "g": interpolate(sG, eG, progressEnd, ease),
+                "b": interpolate(sB, eB, progressEnd, ease),
+                "a": interpolate(sA, eA, progressEnd, ease)
             }
         }
     };
