@@ -247,6 +247,21 @@ main {
     justify-content: center;
 }
 
+#webmText {
+    display: block;
+
+    border: 1.5vmin solid transparent;           /* = frame thickness */
+    border-image-source: url("images/box.gif");
+    border-image-slice: 32 fill;              /* = same number(s) */
+    border-image-repeat: stretch;   
+
+    position: absolute;
+    left: 0;
+
+    max-width: 25vw;
+    overflow-y: auto;
+}
+
 #riqOptions > *{
     width: 30%;
     visibility: hidden;

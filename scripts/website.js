@@ -24,6 +24,7 @@ const riqOutput = document.getElementById("riqOutput");
 const testImageDiv = document.getElementById("testImageDiv");
 const testImageCanvas = document.getElementById("testImageCanvas");
 const decalOptionsDiv = document.getElementById("decalOptionsDiv");
+const webmText = document.getElementById("webmText");
 
 const videoUpload = document.getElementById("videoUpload");
 const videoWidthInput = document.getElementById("videoWidthInput");
@@ -206,7 +207,7 @@ async function generateRiq() {
 
 function toVideoEditor() {
     //alert("ran");
-
+    
     const anim = videoUploadLabel.animate([
         {transform: 'scale(1)'},
         {transform: 'scale(0)'},
@@ -215,8 +216,17 @@ function toVideoEditor() {
         iterations: 1,
         easing: "ease-in",
     });
+    webmText.animate([
+            {transform: 'translateX(0%)'},
+            {transform: 'translateX(-100%)'},
+        ],{
+            duration: 500,
+            iterations: 1,
+            easing: "ease-out",
+        });
     anim.onfinish = function() {
         videoUploadLabel.style.display = "none";
+        webmText.style.display = "none";
         
         videoDiv.style.display = "block";
         videoOptionsDiv.style.display = "block";
