@@ -217,8 +217,8 @@ function toVideoEditor() {
         easing: "ease-in",
     });
     webmText.animate([
-            {transform: 'translateX(0%)'},
-            {transform: 'translateX(-100%)'},
+            {transform: 'translateY(0%)'},
+            {transform: 'translateY(+100%)'},
         ],{
             duration: 500,
             iterations: 1,
@@ -455,6 +455,8 @@ function updateTestImage() {
             testImageDiv.style.height = "50vmin";
             testImageDiv.style.width = `${50 * (width/height)}vmin`;
         }
+        testImageCanvas.width = width;
+        testImageCanvas.height = height
 
         const ctx = testImageCanvas.getContext("2d");
         ctx.clearRect(0, 0, testImageCanvas.width, testImageCanvas.height)
