@@ -222,8 +222,8 @@ function toVideoEditor() {
         ],{
             duration: 500,
             iterations: 1,
-            easing: "ease-out",
-        });
+            easing: "ease-in",
+    });
     anim.onfinish = function() {
         videoUploadLabel.style.display = "none";
         infoBoxes.style.display = "none";
@@ -362,11 +362,44 @@ function toDecalEditor() {
         const width = parseInt(videoWidthInput.value);
         const height = parseInt(videoHeightInput.value);
         await convertVideoToDecal(videoBlob, frameRate, isPNG.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, width, height);
+        updateTestImage();
         riqOptions.style.display = "flex";
         editorOptionsDiv.style.display = "block";
         decalOptionsDiv.style.display = "block";
         testImageDiv.style.display = "flex"
-        updateTestImage();
+
+        riqOptions.animate([
+            {transform: 'translateY(100%)'},
+            {transform: 'translateY(0%)'},
+        ],{
+            duration: 500,
+            iterations: 1,
+            easing: "ease-out",
+        });
+        editorOptionsDiv.animate([
+            {transform: 'translateX(-100%)'},
+            {transform: 'translateX(0%)'},
+        ],{
+            duration: 500,
+            iterations: 1,
+            easing: "ease-out",
+        });
+        decalOptionsDiv.animate([
+            {transform: 'translateX(100%)'},
+            {transform: 'translateX(0%)'},
+        ],{
+            duration: 500,
+            iterations: 1,
+            easing: "ease-out",
+        });
+        testImageDiv.animate([
+            {transform: 'scale(0)'},
+            {transform: 'scale(1)'},  
+        ],{
+            duration: 500,
+            iterations: 1,
+            easing: "ease-out",
+        });
     }
 }
 
