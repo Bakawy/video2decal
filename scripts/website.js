@@ -24,7 +24,7 @@ const riqOutput = document.getElementById("riqOutput");
 const testImageDiv = document.getElementById("testImageDiv");
 const testImageCanvas = document.getElementById("testImageCanvas");
 const decalOptionsDiv = document.getElementById("decalOptionsDiv");
-const webmText = document.getElementById("webmText");
+const infoBoxes = document.getElementById("infoBoxes");
 
 const videoUpload = document.getElementById("videoUpload");
 const videoWidthInput = document.getElementById("videoWidthInput");
@@ -216,7 +216,7 @@ function toVideoEditor() {
         iterations: 1,
         easing: "ease-in",
     });
-    webmText.animate([
+    infoBoxes.animate([
             {transform: 'translateY(0%)'},
             {transform: 'translateY(+100%)'},
         ],{
@@ -226,7 +226,7 @@ function toVideoEditor() {
         });
     anim.onfinish = function() {
         videoUploadLabel.style.display = "none";
-        webmText.style.display = "none";
+        infoBoxes.style.display = "none";
         
         videoDiv.style.display = "block";
         videoOptionsDiv.style.display = "block";

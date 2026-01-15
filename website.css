@@ -320,17 +320,21 @@ main {
     text-align: center;
 }
 
-#webmText {
-    display: block;
+#infoBoxes {
+    position: absolute;
+    bottom: 0;
+    max-width: 100vw;
 
+    display: flex;
+    justify-content: center;
+}
+
+#infoBoxes > *{
     border: 1.5vmin solid transparent;           /* = frame thickness */
     border-image-source: url("images/box.gif");
     border-image-slice: 32 fill;              /* = same number(s) */
     border-image-repeat: stretch;   
 
-    position: absolute;
-    bottom: 0;
-
-    max-width: 100vw;
     overflow-y: auto;
+    max-width: 50%;
 }
