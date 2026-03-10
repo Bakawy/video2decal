@@ -201,7 +201,7 @@ function onRiqUpload() {
 
 async function generateRiq() {
     riqOutput.style.visibility = "hidden";
-    await loadRiq(riqFile, frameRate);
+    await loadRiq(riqFile, frameRate, isPNG.checked);
     riqOutput.style.visibility = "visible";
 }
 

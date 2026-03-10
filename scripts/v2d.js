@@ -26,7 +26,7 @@ async function convertVideoToDecal(videoBlob, frameRate, isPNG, jpgQuality, diff
     decalOrder = frameOrder;
 }
 
-async function loadRiq(file, frameRate) {
+async function loadRiq(file, frameRate, isPNG) {
     showLoadProgress("Opening RIQ");
     const buffer = await new Promise((resolve) => {
         const r = new FileReader();
@@ -40,7 +40,7 @@ async function loadRiq(file, frameRate) {
 
     setLoadProgress(0, true);
     setLoaderText("Adding images");
-    addSprites(isPNG)
+    addSprites(isPNG);
 
     setLoadProgress(0, true);
     setLoaderText("Charting");
@@ -84,7 +84,6 @@ async function getVideoFrames(videoBlob, frameRate) {
 
     for (let time = 0; time < duration; time += dt) {
         const seekTime = Math.floor(time / spf) * spf + 0.5 * spf;
-        console.log(seekTime);
         await seekTo(videoElement, seekTime);
 
         ctx.clearRect(0, 0, w, h);
@@ -152,7 +151,7 @@ async function getVideoImages(frames, keptIndicies, videoBlob, isPNG, jpgQuality
         ctx.clearRect(0, 0, w, h);
         ctx.drawImage(videoElement, 0, 0, w, h);
 
-        frame.image = canvas.toDataURL(fileType, isPNG ? 1 : jpgQuality)
+        frame.image = canvas.toDataURL(fileType, isPNG ? 1 : jpgQuality);
 
         n++;
         setLoadProgress(n / keptIndicies.length);
