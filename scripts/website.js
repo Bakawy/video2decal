@@ -34,7 +34,7 @@ const jpgQuality = document.getElementById("jpgQuality");//slider
 const jpgQualityValue = document.getElementById("jpgQualityValue");
 const differenceThreshold = document.getElementById("differenceThreshold");
 const checkAllFramesInput = document.getElementById("checkAllFramesInput");
-const isPNG = document.getElementById("png");
+const isPNGInput = document.getElementById("png");
 const checkLastInput = document.getElementById("checkLastInput");
 const riqInput = document.getElementById("riqInput");
 const trackInput = document.getElementById("trackInput");
@@ -201,7 +201,7 @@ function onRiqUpload() {
 
 async function generateRiq() {
     riqOutput.style.visibility = "hidden";
-    await loadRiq(riqFile, frameRate, isPNG.checked);
+    await loadRiq(riqFile, frameRate, isPNGInput.checked);
     riqOutput.style.visibility = "visible";
 }
 
@@ -361,7 +361,7 @@ function toDecalEditor() {
         const videoBlob = await (await fetch(videoPreview.src)).blob();
         const width = parseInt(videoWidthInput.value);
         const height = parseInt(videoHeightInput.value);
-        await convertVideoToDecal(videoBlob, frameRate, isPNG.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, width, height);
+        await convertVideoToDecal(videoBlob, frameRate, isPNGInput.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, width, height);
         riqOptions.style.display = "flex";
         editorOptionsDiv.style.display = "block";
         decalOptionsDiv.style.display = "block";
@@ -478,7 +478,7 @@ function updateTestImage() {
 }
 
 function downloadTestImage() {
-    const fileType = isPNG.checked ? "png" : "jpeg";
+    const fileType = isPNGInput.checked ? "png" : "jpeg";
     const fileName = `test_image.${fileType}`;
     testImageCanvas.toBlob((blob) => {
         const file = new File([blob], fileName, {type: `image/${fileType}`});

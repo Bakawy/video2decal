@@ -306,7 +306,7 @@ async function addEntities(frameRate, isPNG) {
 
                 let progressStart = (chartedFrames + (length - framesLeft)) / totalFrames;
                 let progressEnd = (chartedFrames + (length - framesLeft) + framesToTc) / totalFrames
-                addEntity(currentBeat, beatsToTc, progressStart, progressEnd, remix, frame);
+                addEntity(currentBeat, beatsToTc, progressStart, progressEnd, remix, frame, isPNG);
                 framesLeft -= framesToTc;
                 currentBeat = tcBeat;
 
@@ -319,7 +319,7 @@ async function addEntities(frameRate, isPNG) {
 
         let progressStart = (chartedFrames + (length - framesLeft)) / totalFrames;
         let progressEnd = (chartedFrames + length) / totalFrames
-        addEntity(currentBeat, remainingBeats, progressStart, progressEnd, remix, frame)
+        addEntity(currentBeat, remainingBeats, progressStart, progressEnd, remix, frame, isPNG)
 
         currentBeat += remainingBeats;
 
@@ -339,7 +339,7 @@ async function addEntities(frameRate, isPNG) {
     zip.file("remix.json", data, {binary: true});
 }
 
-function addEntity(beat, length, progressStart, progressEnd, remix, frame) {
+function addEntity(beat, length, progressStart, progressEnd, remix, frame, isPNG) {
     const filter = parseInt(document.getElementById("filterInput").value);
     const ease = parseInt(document.getElementById("easeInput").value);
     const layer = parseInt(document.getElementById("layerInput").value);
