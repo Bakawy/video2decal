@@ -125,7 +125,7 @@ function validateVideo(file) {
             break;
         }
     }
-    if (!correctType) return "Incorrect file type \n mp4 gif webm mov";
+    if (!correctType) return "Incorrect file type \nmp4 gif webm mov";
     return true
 }
 
@@ -361,7 +361,7 @@ function toDecalEditor() {
         const videoBlob = await (await fetch(videoPreview.src)).blob();
         const width = parseInt(videoWidthInput.value);
         const height = parseInt(videoHeightInput.value);
-        await convertVideoToDecal(videoBlob, frameRate, isPNGInput.checked, jpgQualityValue.value, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, width, height);
+        await convertVideoToDecal(videoBlob, frameRate, isPNGInput.checked, jpgQualityValue.value/100, parseFloat(differenceThreshold.value)/100, checkAllFramesInput.checked ? Infinity : checkLastInput.value, width, height);
         riqOptions.style.display = "flex";
         editorOptionsDiv.style.display = "block";
         decalOptionsDiv.style.display = "block";
