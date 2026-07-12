@@ -8,7 +8,7 @@ async function convertVideoToDecal(videoBlob, frameRate, isPNG, jpgQuality, diff
 
     setLoadProgress(0, true);
     setLoaderText("Removing duplicate frames");
-    const {keptIndicies, frameOrder} = await filterReusedFrames(frames, differenceThreshold, checkCount);
+    const { keptIndicies, frameOrder } = await filterReusedFrames(frames, differenceThreshold, checkCount);
     console.log(frameOrder);
     console.log(keptIndicies);
 
@@ -54,7 +54,7 @@ async function loadRiq(file, frameRate, isPNG) {
     });
     const filename = `${originalFileName.substring(0, originalFileName.length - 4)}_modified.riq`;
 
-    if (outputURL) {URL.revokeObjectURL(outputURL);}
+    if (outputURL) { URL.revokeObjectURL(outputURL); }
     outputURL = URL.createObjectURL(zipBlob);
 
     riqOutput.href = outputURL;
@@ -67,20 +67,20 @@ async function getVideoFrames(videoBlob, frameRate) {
     const frames = new Map();
     const videoElement = document.createElement("video");
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d", {willReadFrequently: true});
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.imageSmoothingEnabled = false;
     videoElement.src = URL.createObjectURL(videoBlob);
 
     await waitForEvent(videoElement, "loadedmetadata");
 
     const duration = videoElement.duration;
-    const spf = 1/videoFrameRate; //seconds per frame
-    const dt = 1/frameRate;
+    const spf = 1 / videoFrameRate; //seconds per frame
+    const dt = 1 / frameRate;
     const w = 64;
     const h = 64;
     let index = 0;
     canvas.width = w;
-    canvas.height =  h;
+    canvas.height = h;
 
     for (let time = 0; time < duration; time += dt) {
         const seekTime = Math.floor(time / spf) * spf + 0.5 * spf;
@@ -88,14 +88,14 @@ async function getVideoFrames(videoBlob, frameRate) {
 
         ctx.clearRect(0, 0, w, h);
         ctx.drawImage(videoElement, 0, 0, w, h);
-        
+
         frames.set(index, {
             index: index,
             time: seekTime,
             data: ctx.getImageData(0, 0, w, h).data,
         });
         index++;
-        setLoadProgress(time/duration);
+        setLoadProgress(time / duration);
     }
     URL.revokeObjectURL(videoElement.src)
     return frames
@@ -126,13 +126,13 @@ function filterReusedFrames(frames, differenceThreshold, checkCount) {
         }
         setLoadProgress(i / indicies.length);
     }
-    return {keptIndicies, frameOrder};
+    return { keptIndicies, frameOrder };
 }
 
 async function getVideoImages(frames, keptIndicies, videoBlob, isPNG, jpgQuality, width, height) {
     const videoElement = document.createElement("video");
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d", {willReadFrequently: true});
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     const fileType = isPNG ? "image/png" : "image/jpeg";
     videoElement.src = URL.createObjectURL(videoBlob);
 
@@ -141,7 +141,7 @@ async function getVideoImages(frames, keptIndicies, videoBlob, isPNG, jpgQuality
     const w = width;
     const h = height;
     canvas.width = w;
-    canvas.height =  h;
+    canvas.height = h;
 
     let n = 0;
     for (const index of keptIndicies) {
@@ -161,12 +161,12 @@ async function getVideoImages(frames, keptIndicies, videoBlob, isPNG, jpgQuality
 }
 
 function calculateFrameLengths(frameOrder) {
-    const final = [{index: 0, length: 1}];
+    const final = [{ index: 0, length: 1 }];
     for (let i = 1; i < frameOrder.length; i++) {
         if (frameOrder[i] == frameOrder[i - 1]) {
             final[final.length - 1].length++;
         } else {
-            final.push({index: frameOrder[i], length: 1});
+            final.push({ index: frameOrder[i], length: 1 });
         }
         setLoadProgress(i / frameOrder.length);
     }
@@ -175,17 +175,17 @@ function calculateFrameLengths(frameOrder) {
 }
 
 function waitForEvent(target, name) {
-  return new Promise((resolve, reject) => {
-    const onError = () => cleanup(() => reject(target.error || new Error("video error")));
-    const onEvt = () => cleanup(resolve);
-    const cleanup = (done) => {
-      target.removeEventListener(name, onEvt);
-      target.removeEventListener("error", onError);
-      done();
-    };
-    target.addEventListener(name, onEvt, { once: true });
-    target.addEventListener("error", onError, { once: true });
-  });
+    return new Promise((resolve, reject) => {
+        const onError = () => cleanup(() => reject(target.error || new Error("video error")));
+        const onEvt = () => cleanup(resolve);
+        const cleanup = (done) => {
+            target.removeEventListener(name, onEvt);
+            target.removeEventListener("error", onError);
+            done();
+        };
+        target.addEventListener(name, onEvt, { once: true });
+        target.addEventListener("error", onError, { once: true });
+    });
 }
 
 function addSprites(isPNG) {
@@ -205,9 +205,9 @@ function addSprites(isPNG) {
 
         frame.path = `Resources/Sprites/${fileNameInput.value}_${String(id).padStart(digits, "0")}${isPNG ? ".png" : ".jpeg"}`;
         const base64 = image.substring(image.indexOf('base64,') + 'base64,'.length);
-        zip.file(frame.path, base64, {base64: true});
+        zip.file(frame.path, base64, { base64: true });
         i++;
-        setLoadProgress(i/frameCount);
+        setLoadProgress(i / frameCount);
     }
 }
 
@@ -273,7 +273,7 @@ async function addEntities(frameRate, isPNG) {
 
         const beats = parseFloat(lengthInput.value);
 
-        bpf = beats/frames;
+        bpf = beats / frames;
     }
 
     let totalFrames = 0;
@@ -325,7 +325,7 @@ async function addEntities(frameRate, isPNG) {
 
         i++;
         chartedFrames += length;
-        setLoadProgress(i/decalOrder.length)
+        setLoadProgress(i / decalOrder.length)
     }
 
     const endString = JSON.stringify(remix);
@@ -336,7 +336,7 @@ async function addEntities(frameRate, isPNG) {
     data.set(bom, 0);
     data.set(jsonBytes, bom.length);
 
-    zip.file("remix.json", data, {binary: true});
+    zip.file("remix.json", data, { binary: true });
 }
 
 function addEntity(beat, length, progressStart, progressEnd, remix, frame, isPNG) {
@@ -362,6 +362,9 @@ function addEntity(beat, length, progressStart, progressEnd, remix, frame, isPNG
 
     const [sR, sG, sB, sA] = hexToRGBA(sColor);
     const [eR, eG, eB, eA] = hexToRGBA(eColor);
+
+    console.log([sR, sG, sB, sA]);
+    console.log([eR, eG, eB, eA]);
 
     const entity = {
         "type": "riq__Entity",
@@ -422,8 +425,8 @@ function getTempo(beat, remix) {
 }
 
 async function seekTo(video, t) {
-  const target = Math.min(t, video.duration || t);
-  if (Math.abs(video.currentTime - target) < 1e-4) return;
-  video.currentTime = target;
-  await waitForEvent(video, "seeked");
+    const target = Math.min(t, video.duration || t);
+    if (Math.abs(video.currentTime - target) < 1e-4) return;
+    video.currentTime = target;
+    await waitForEvent(video, "seeked");
 }
