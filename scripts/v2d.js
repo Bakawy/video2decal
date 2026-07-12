@@ -363,9 +363,6 @@ function addEntity(beat, length, progressStart, progressEnd, remix, frame, isPNG
     const [sR, sG, sB, sA] = hexToRGBA(sColor);
     const [eR, eG, eB, eA] = hexToRGBA(eColor);
 
-    console.log([sR, sG, sB, sA]);
-    console.log([eR, eG, eB, eA]);
-
     const entity = {
         "type": "riq__Entity",
         "version": 1,
